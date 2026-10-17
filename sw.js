@@ -1,6 +1,6 @@
 // ตารางชีวิต service worker: keeps the app usable offline.
 // Bump VERSION whenever you change any file, so iPads pick up the update.
-const VERSION = 'lifetable-v2';
+const VERSION = 'lifetable-v3';
 const SHELL = [
   './',
   './index.html',
@@ -26,7 +26,16 @@ self.addEventListener('activate', (event) => {
 // Everything else: cache first.
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  if (req.method !== 'GET') return;
+  const origin = new URL(req.url).origin;
+  // Firebase SDK files: cache after first load so the app opens offline.
+  if (origin === 'https://www.gstatic.com' && req.url.includes('/firebasejs/')) {
+    event.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+      const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res;
+    })));
+    return;
+  }
+  if (origin !== location.origin) return; // Firestore and Auth traffic goes straight to Google
   if (req.mode === 'navigate') {
     event.respondWith(
       fetch(req)

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PLANNER</title>
+<title>ตารางชีวิต</title>
 <meta name="description" content="ตารางชีวิตรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#990033">
@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
+/* Layout: early-2000s portal built the way those pages were: centered fixed-width shell (~980px for 1024x768 screens), flat bgcolor banner, left menu column, tables drawn with 1px cellspacing over a grey table background, native form controls, Tahoma at small pixel sizes, web-safe pastels. Single light theme by choice. */
 :root{
   --body:#EEEEEE; --paper:#FFFFFF; --ink:#000000; --muted:#666666; --grid:#999999;
   --maroon:#990033; --pink:#CC6699; --pink2:#FFCCE5; --pink3:#FFF0F5; --hl:#FFFF99;
@@ -187,12 +188,14 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
   <div class="lbox">
     <div class="lh"><span>Weekly Planner</span><b>ตารางชีวิต</b></div>
     <div class="lsub">เข้าสู่ระบบ</div>
-    <form id="lf" autocomplete="on">
+    <div id="l-wait" style="padding:14px 12px;font-size:12px">กำลังตรวจสอบการเข้าสู่ระบบ...</div>
+    <form id="lf" autocomplete="on" hidden>
+      <label for="l-email"><b>อีเมล</b></label>
+      <input type="email" id="l-email" autocomplete="username" required style="width:100%;font-size:16px;min-height:34px">
       <label for="l-pw"><b>รหัสผ่าน</b></label>
       <input type="password" id="l-pw" autocomplete="current-password" required>
-      <label><input type="checkbox" id="l-rem"> จำไว้ในเครื่องนี้ 30 วัน</label>
       <div class="lerr" id="l-err" role="alert"></div>
-      <div><button class="btn" type="submit" id="l-go">เข้าสู่ระบบ</button></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><button class="btn" type="submit" id="l-go">เข้าสู่ระบบ</button><a href="#" id="l-forgot">ลืมรหัสผ่าน</a></div>
     </form>
     <div class="lfoot">ตารางชีวิต &copy; 2569</div>
   </div>
@@ -334,6 +337,8 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
         <h3>ข้อมูล</h3>
         <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="setClearEx">ลบรายการตัวอย่าง</button><button class="btn sm" type="button" id="setClearDone">ลบงานที่เสร็จแล้ว</button><button class="btn sm" type="button" id="setClearPast">ลบนัดที่ผ่านไปแล้ว</button></div>
         <div class="alert" id="set-msg" hidden></div>
+        <h3>บัญชี</h3>
+        <div style="font-size:11px">เข้าสู่ระบบเป็น <b id="who">-</b> · ข้อมูลซิงก์ขึ้นคลาวด์และเปิดได้จากทุกเครื่องที่ล็อกอินบัญชีนี้ <button class="btn sm" type="button" id="logout2">ออกจากระบบ</button></div>
         <h3>เปลี่ยนรหัสผ่าน</h3>
         <form id="pwf" autocomplete="off" style="display:grid;grid-template-columns:minmax(0,1fr);gap:4px;max-width:320px;font-size:11px">
           <label for="pw-old">รหัสผ่านเดิม</label><input type="password" id="pw-old" autocomplete="current-password" required>
@@ -343,7 +348,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
           <div class="alert" id="pw-msg" hidden></div>
         </form>
         <h3>สำรองข้อมูล</h3>
-        <div style="font-size:11px">ระบบสำรองไว้ในเครื่องให้อัตโนมัติวันละครั้ง ก่อนการแก้ไขครั้งแรกของวัน และเก็บไว้ 20 ชุดล่าสุด ข้อมูลทั้งหมดอยู่ใน iPad เครื่องนี้เท่านั้น ควรกดส่งออกเป็นไฟล์เก็บไว้ใน iCloud Drive หรือที่อื่นเป็นระยะ</div>
+        <div style="font-size:11px">ระบบสำรองขึ้นคลาวด์ให้อัตโนมัติวันละครั้ง ก่อนการแก้ไขครั้งแรกของวัน และเก็บไว้ 20 ชุดล่าสุด จะส่งออกเป็นไฟล์เก็บไว้อีกชั้นก็ได้</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="bkNow">สำรองตอนนี้</button><button class="btn sm" type="button" id="bkDown">ส่งออกไฟล์ .json</button><button class="btn sm" type="button" id="bkImpBtn">นำเข้าจากไฟล์</button><input type="file" id="bkImp" accept=".json,application/json" hidden></div>
         <div class="alert" id="bk-msg" hidden></div>
         <div id="bk-jsonwrap" hidden><div style="font-size:11px">ส่งออกเป็นไฟล์ไม่ได้ ก๊อปข้อความด้านล่างไปเก็บไว้แทน</div><textarea id="bk-json" readonly></textarea></div>
@@ -363,6 +368,25 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 </div>
 
 <script>
+/* if the app script cannot load (offline on first open), say so on the login box */
+setTimeout(function(){var w=document.getElementById('l-wait');if(w&&!w.hidden&&!window.__appReady)w.textContent='โหลดระบบไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วเปิดแอปใหม่';},10000);
+</script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, onSnapshot, collection, query, orderBy, limit, getDocs, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+const firebaseConfig = {
+  apiKey: "AIzaSyBlE-PP-i_RG8QRo6hw0cqrnNaDTQtRUJA",
+  authDomain: "planner-e8452.firebaseapp.com",
+  projectId: "planner-e8452",
+  storageBucket: "planner-e8452.firebasestorage.app",
+  messagingSenderId: "936479332405",
+  appId: "1:936479332405:web:b305ea8111755ad575f97c"
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const fdb = initializeFirestore(fbApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+window.__appReady = true;
 (function(){
 const DAYS=[{en:'MO',th:'จันทร์',s:'จ.'},{en:'TU',th:'อังคาร',s:'อ.'},{en:'WE',th:'พุธ',s:'พ.'},{en:'TH',th:'พฤหัสบดี',s:'พฤ.'},{en:'FR',th:'ศุกร์',s:'ศ.'},{en:'SA',th:'เสาร์',s:'ส.'},{en:'SU',th:'อาทิตย์',s:'อา.'}];
 const CATS={STUDY:'เรียน',ACT:'กิจกรรม',TUTOR:'ติว',SELF:'ส่วนตัว',OTHER:'อื่น ๆ'};
@@ -394,11 +418,36 @@ function loadLocal(){
   if(raw===null) state=sampleData();
   loaded=true; syncBase(); setStatus('ข้อมูลเก็บไว้ในเครื่องนี้'); renderAll();
 }
-let writing=false, dirty=false;
-async function persist(){
-  try{localStorage.setItem(LKEY,JSON.stringify(state));setStatus('บันทึกในเครื่องแล้ว '+fmt(new Date().getHours()*60+new Date().getMinutes())+' น.')}
-  catch(e){setStatus('บันทึกไม่ได้ พื้นที่ในเครื่องอาจเต็ม ลองลบข้อมูลสำรองเก่าในหน้าตั้งค่า')}
+let fbUser=null, docRef=null, bkRef=null, unsubDoc=null;
+const nowHM=()=>fmt(new Date().getHours()*60+new Date().getMinutes());
+function persist(){
+  try{localStorage.setItem(LKEY,JSON.stringify(state))}catch(e){}
+  if(!docRef){setStatus('บันทึกในเครื่องแล้ว '+nowHM()+' น.');return}
+  setDoc(docRef,{...clone(state),updatedAt:serverTimestamp()})
+    .catch(e=>setStatus('บันทึกขึ้นคลาวด์ไม่สำเร็จ ('+((e&&e.code)||'error')+') ข้อมูลยังอยู่ในเครื่อง'));
 }
+function hasRealData(d){return !!d&&[...(d.entries||[]),...(d.events||[]),...(d.tasks||[])].some(x=>!x.example)}
+function startSync(u){
+  docRef=doc(fdb,'users',u.uid,'data','main');
+  bkRef=collection(fdb,'users',u.uid,'backups');
+  getDocs(query(bkRef,orderBy('at','desc'),limit(1))).then(q=>{if(q.docs[0])lastBackupAt=+q.docs[0].data().at||0;backupChecked=true}).catch(()=>{backupChecked=true});
+  unsubDoc=onSnapshot(docRef,{includeMetadataChanges:true},snap=>{
+    const md=snap.metadata;
+    setStatus(md.hasPendingWrites?'รอซิงก์ขึ้นคลาวด์...':(md.fromCache?'ออฟไลน์ ใช้ข้อมูลในเครื่อง จะซิงก์เมื่อกลับมาออนไลน์':'ซิงก์แล้ว '+nowHM()+' น.'));
+    if(!snap.exists()){
+      if(md.fromCache){ if(!loaded){ loadLocal(); } return; }
+      // first time on the cloud: bring this device's data (or the samples) up
+      let local=null; try{local=JSON.parse(localStorage.getItem(LKEY)||'null')}catch(e){}
+      state=hasRealData(local)?normalize(local):sampleData();
+      loaded=true; mode='cloud'; syncBase(); renderAll(); persist(); return;
+    }
+    if(md.hasPendingWrites&&loaded) return;
+    state=normalize(snap.data()); loaded=true; mode='cloud'; syncBase();
+    try{localStorage.setItem(LKEY,JSON.stringify(state))}catch(e){}
+    renderAll(); renderUndo();
+  },err=>{setStatus('เชื่อมคลาวด์ไม่ได้ ('+((err&&err.code)||'error')+') ใช้ข้อมูลในเครื่องไปก่อน'); if(!loaded) loadLocal();});
+}
+function stopSync(){if(unsubDoc)unsubDoc();unsubDoc=null;docRef=null;bkRef=null}
 const clone=o=>JSON.parse(JSON.stringify(o));
 let undoS=[],redoS=[],lastC=null,flashMsg=null,flashT=null;
 function syncBase(){lastC=clone(state)}
@@ -424,17 +473,17 @@ document.addEventListener('keydown',ev=>{
   if(k==='z'&&!ev.shiftKey){ev.preventDefault();undo()} else if((k==='z'&&ev.shiftKey)||k==='y'){ev.preventDefault();redo()}
 });
 
-/* ---------- local backups ---------- */
-const BKEY='lifereg.backups';
-let lastBackupAt=0,backupChecked=true;
-function readBk(){try{const l=JSON.parse(localStorage.getItem(BKEY)||'[]');return Array.isArray(l)?l:[]}catch(e){return []}}
-function writeBk(l){localStorage.setItem(BKEY,JSON.stringify(l.slice(0,20)))}
-lastBackupAt=(readBk()[0]||{}).at||0;
+/* ---------- cloud backups ---------- */
+let lastBackupAt=0,backupChecked=false;
 async function makeBackup(data,label){
-  const at=Date.now(),l=readBk(); l.unshift({id:'b'+at,at,label,data:clone(data)}); writeBk(l); lastBackupAt=at; return at;
+  if(!bkRef) throw {code:'no-cloud'};
+  const at=Date.now();
+  setDoc(doc(bkRef,'b'+at),{at,label,data:clone(data)}).then(prune).catch(()=>{});
+  lastBackupAt=at; return at;
 }
+async function prune(){try{const q=await getDocs(query(bkRef,orderBy('at','desc')));for(const d of q.docs.slice(20)){await deleteDoc(d.ref)}}catch(e){}}
 function autoBackup(prev){
-  if(!prev||Date.now()-lastBackupAt<86400000) return;
+  if(!prev||!bkRef||!backupChecked||Date.now()-lastBackupAt<86400000) return;
   makeBackup(prev,'อัตโนมัติ').catch(()=>{});
 }
 function sampleData(){
@@ -775,14 +824,15 @@ let bkList=[];
 async function renderBackups(){
   const tb=$('bktab'); if(!tb) return;
   let h='<thead><tr><th>วันเวลา</th><th>ชนิด</th><th>ข้อมูล</th><th></th></tr></thead><tbody>';
-  bkList=readBk();
+  if(!bkRef){tb.innerHTML=h+'<tr><td colspan="4" class="ctr empty">ต้องเข้าสู่ระบบก่อน</td></tr></tbody>';return}
+  try{const q=await getDocs(query(bkRef,orderBy('at','desc'),limit(20)));bkList=q.docs.map(d=>({id:d.id,...d.data()}))}catch(e){tb.innerHTML=h+'<tr><td colspan="4" class="ctr empty">โหลดรายการสำรองไม่ได้ ลองใหม่อีกครั้ง</td></tr></tbody>';return}
   if(!bkList.length) h+='<tr><td colspan="4" class="ctr empty">ยังไม่มีข้อมูลสำรอง กด "สำรองตอนนี้" เพื่อเริ่ม</td></tr>';
   bkList.forEach(b=>{h+=`<tr><td style="white-space:nowrap">${esc(stamp(b.at))}</td><td>${esc(b.label||'')}</td><td>${esc(counts(b.data||{}))}</td><td class="ctr" style="white-space:nowrap"><button class="btn sm" type="button" data-rest="${esc(b.id)}">กู้คืน</button> <button class="btn sm" type="button" data-bdel="${esc(b.id)}">ลบ</button></td></tr>`});
   tb.innerHTML=h+'</tbody>';
 }
 $('bkNow').addEventListener('click',async()=>{
-  try{await makeBackup(state,'สำรองเอง');bkMsg('สำรองข้อมูลแล้ว',true);renderBackups()}
-  catch(e){bkMsg('สำรองไม่สำเร็จ พื้นที่ในเครื่องอาจเต็ม ลองลบข้อมูลสำรองเก่า')}
+  try{await makeBackup(state,'สำรองเอง');bkMsg(navigator.onLine?'สำรองข้อมูลแล้ว':'ออฟไลน์อยู่ จะสำรองขึ้นคลาวด์เมื่อกลับมาออนไลน์',true);setTimeout(renderBackups,600)}
+  catch(e){bkMsg('สำรองไม่สำเร็จ ลองใหม่อีกครั้ง')}
 });
 const armed={};
 function arm(btn,key,label){if(armed[key])return true;armed[key]=true;const o=btn.textContent;btn.textContent=label;setTimeout(()=>{armed[key]=false;if(btn.isConnected)btn.textContent=o},4000);return false}
@@ -793,7 +843,7 @@ $('bktab').addEventListener('click',async ev=>{
     try{await makeBackup(state,'ก่อนกู้คืน')}catch(e){}
     state=normalize(b.data||{});commit('กู้คืนข้อมูลจาก '+stamp(b.at));bkMsg('กู้คืนข้อมูลจาก '+stamp(b.at)+' แล้ว ถ้าไม่ใช่ที่ต้องการ กดเลิกทำได้',true);renderBackups()}
   if(d){if(!arm(d,'d'+d.dataset.bdel,'กดอีกครั้งเพื่อลบ'))return;
-    try{writeBk(readBk().filter(b=>b.id!==d.dataset.bdel));renderBackups()}catch(e){bkMsg('ลบไม่สำเร็จ')}}
+    try{deleteDoc(doc(bkRef,d.dataset.bdel)).catch(()=>{});bkList=bkList.filter(b=>b.id!==d.dataset.bdel);setTimeout(renderBackups,400)}catch(e){bkMsg('ลบไม่สำเร็จ')}}
 });
 $('bkDown').addEventListener('click',async()=>{
   const json=JSON.stringify({app:'ตารางชีวิต',version:1,exportedAt:new Date().toISOString(),...clone(state)},null,2);
@@ -822,55 +872,48 @@ $('bkImp').addEventListener('change',()=>{
 
 function renderAll(){renderGrid();renderToday();renderList();renderTasks();renderSum();renderCal()}
 renderLegend(); resetForm(); renderAll(); renderUndo();
-/* ---------- login ---------- */
-const AUTH_DEFAULT={salt:'88Nrxv17kB56DUMWmFNo8g==',hash:'D7G5uORqCQF2plCaTS9441ihlwKEhuoD6k7gHudmVnA=',it:210000};
-const PWKEY='lifereg.pw', REMKEY='lifereg.auth', SESKEY='lifereg.session';
-const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u))), unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-function authRec(){try{const r=JSON.parse(localStorage.getItem(PWKEY)||'null');if(r&&r.salt&&r.hash)return r}catch(e){}return AUTH_DEFAULT}
-async function derive(pw,saltB64,it){
-  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
-  return b64(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:unb64(saltB64),iterations:it},key,256));
-}
-async function checkPw(pw){const r=authRec();return (await derive(pw,r.salt,r.it||210000))===r.hash}
-function remembered(){try{const r=JSON.parse(localStorage.getItem(REMKEY)||'null');if(r&&r.until>Date.now())return true}catch(e){}try{return sessionStorage.getItem(SESKEY)==='1'}catch(e){return false}}
-let started=false;
-function unlock(){
-  $('lock').hidden=true; $('app').hidden=false;
-  if(!started){started=true;loadLocal();}
-}
-function lockApp(){
-  try{localStorage.removeItem(REMKEY);sessionStorage.removeItem(SESKEY)}catch(e){}
-  $('app').hidden=true; $('lock').hidden=false; $('l-pw').value=''; $('l-err').textContent='';
-  location.reload();
-}
-let fails=0, waitUntil=0;
+/* ---------- login (Firebase Auth) ---------- */
+const AUTH_ERR={'auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/user-not-found':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/invalid-email':'รูปแบบอีเมลไม่ถูกต้อง','auth/too-many-requests':'ลองผิดหลายครั้ง รอสักครู่แล้วลองใหม่','auth/network-request-failed':'ไม่มีอินเทอร์เน็ต เข้าสู่ระบบครั้งแรกต้องออนไลน์','auth/operation-not-allowed':'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยอีเมลใน Firebase','auth/user-disabled':'บัญชีนี้ถูกปิดใช้งาน','auth/missing-password':'ใส่รหัสผ่านก่อน','auth/weak-password':'รหัสผ่านใหม่สั้นเกินไป','auth/requires-recent-login':'เข้าสู่ระบบใหม่อีกครั้งแล้วลองเปลี่ยนรหัสผ่าน'};
+const authMsg=e=>AUTH_ERR[e&&e.code]||('เกิดข้อผิดพลาด ('+((e&&e.code)||'unknown')+')');
+onAuthStateChanged(auth,u=>{
+  $('l-wait').hidden=true;
+  if(u){
+    fbUser=u; $('who').textContent=u.email||'-'; $('lock').hidden=true; $('app').hidden=false;
+    if(!docRef) startSync(u);
+  } else {
+    fbUser=null; stopSync(); $('app').hidden=true; $('lock').hidden=false; $('lf').hidden=false;
+    setTimeout(()=>{try{($('l-email').value?$('l-pw'):$('l-email')).focus()}catch(e){}},50);
+  }
+});
 $('lf').addEventListener('submit',async ev=>{
   ev.preventDefault();
-  const err=$('l-err');
-  if(!window.crypto||!crypto.subtle){err.textContent='เบราว์เซอร์นี้เข้าสู่ระบบไม่ได้ ต้องเปิดผ่านลิงก์ https';return}
-  if(Date.now()<waitUntil){err.textContent='ใส่ผิดหลายครั้ง รอ '+Math.ceil((waitUntil-Date.now())/1000)+' วินาทีแล้วลองใหม่';return}
-  $('l-go').disabled=true; err.textContent='กำลังตรวจสอบ...';
-  let ok=false; try{ok=await checkPw($('l-pw').value)}catch(e){}
+  const err=$('l-err'); $('l-go').disabled=true; err.textContent='กำลังเข้าสู่ระบบ...';
+  try{await signInWithEmailAndPassword(auth,$('l-email').value.trim(),$('l-pw').value);err.textContent='';$('l-pw').value=''}
+  catch(e){err.textContent=authMsg(e);$('l-pw').select()}
   $('l-go').disabled=false;
-  if(!ok){fails++; if(fails>=5){waitUntil=Date.now()+30000;fails=0} err.textContent='รหัสผ่านไม่ถูกต้อง'; $('l-pw').select(); return}
-  fails=0; err.textContent='';
-  try{ if($('l-rem').checked) localStorage.setItem(REMKEY,JSON.stringify({until:Date.now()+30*86400000})); sessionStorage.setItem(SESKEY,'1'); }catch(e){}
-  $('l-pw').value=''; unlock();
 });
-$('logout').addEventListener('click',ev=>{ev.preventDefault();lockApp()});
+$('l-forgot').addEventListener('click',async ev=>{
+  ev.preventDefault(); const em=$('l-email').value.trim(), err=$('l-err');
+  if(!em){err.textContent='ใส่อีเมลก่อน แล้วกดลืมรหัสผ่านอีกครั้ง';$('l-email').focus();return}
+  try{await sendPasswordResetEmail(auth,em);err.textContent='ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่ '+em+' แล้ว'}catch(e){err.textContent=authMsg(e)}
+});
+async function doLogout(){
+  try{localStorage.removeItem(LKEY)}catch(e){}
+  try{await signOut(auth)}catch(e){}
+  location.reload();
+}
+$('logout').addEventListener('click',ev=>{ev.preventDefault();doLogout()});
+$('logout2').addEventListener('click',()=>doLogout());
 $('pwf').addEventListener('submit',async ev=>{
   ev.preventDefault();
   const m=$('pw-msg'), say=(t,ok)=>{m.hidden=false;m.className='alert'+(ok?' okay':'');m.textContent=t};
   const o=$('pw-old').value,n=$('pw-new').value,n2=$('pw-new2').value;
   if(n.length<8) return say('รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัว');
   if(n!==n2) return say('รหัสผ่านใหม่สองช่องไม่ตรงกัน');
-  let ok=false; try{ok=await checkPw(o)}catch(e){}
-  if(!ok) return say('รหัสผ่านเดิมไม่ถูกต้อง');
-  const salt=b64(crypto.getRandomValues(new Uint8Array(16)));
-  try{localStorage.setItem(PWKEY,JSON.stringify({salt,hash:await derive(n,salt,210000),it:210000}));$('pwf').reset();say('เปลี่ยนรหัสผ่านแล้ว ใช้รหัสใหม่ตั้งแต่ครั้งถัดไป',true)}
-  catch(e){say('เปลี่ยนรหัสผ่านไม่สำเร็จ')}
+  const u=auth.currentUser; if(!u) return say('ต้องเข้าสู่ระบบก่อน');
+  try{await reauthenticateWithCredential(u,EmailAuthProvider.credential(u.email,o));await updatePassword(u,n);$('pwf').reset();say('เปลี่ยนรหัสผ่านแล้ว ใช้รหัสใหม่กับทุกเครื่อง',true)}
+  catch(e){say(e&&(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password')?'รหัสผ่านเดิมไม่ถูกต้อง':authMsg(e))}
 });
-if(remembered()) unlock(); else { $('lock').hidden=false; setTimeout(()=>{try{$('l-pw').focus()}catch(e){}},50); }
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 })();
