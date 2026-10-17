@@ -147,6 +147,17 @@ img{max-width:100%}
 body{margin:0;-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--maroon);z-index:10}
 .shell{max-width:1200px}
+/* lock screen */
+#lock{min-height:80vh;display:flex;align-items:center;justify-content:center;padding-block:24px}
+#lock .lbox{width:100%;max-width:340px;background:var(--paper);border:1px solid var(--grid)}
+#lock .lh{background:var(--maroon);color:#FFFFFF;padding:8px 10px}
+#lock .lh b{font-size:15px;display:block}
+#lock .lh span{font-size:11px;color:var(--pink2)}
+#lock .lsub{background:var(--pink);color:#FFFFFF;font-size:11px;font-weight:700;padding:2px 10px}
+#lock form{padding:12px 12px 14px;display:grid;gap:8px;font-size:12px}
+#lock input[type=password]{width:100%;font-size:16px;min-height:34px}
+#lock .lerr{color:var(--warn);font-weight:700;min-height:1.3em}
+#lock .lfoot{border-top:1px solid var(--grid);color:var(--muted);font-size:10px;padding:4px 10px;text-align:center}
 /* touch / iPad */
 html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 @media (pointer:coarse){
@@ -173,7 +184,21 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 </head>
 <body>
 
-<div class="shell">
+<div id="lock">
+  <div class="lbox">
+    <div class="lh"><span>Weekly Planner</span><b>ตารางชีวิต</b></div>
+    <div class="lsub">เข้าสู่ระบบ</div>
+    <form id="lf" autocomplete="on">
+      <label for="l-pw"><b>รหัสผ่าน</b></label>
+      <input type="password" id="l-pw" autocomplete="current-password" required>
+      <label><input type="checkbox" id="l-rem"> จำไว้ในเครื่องนี้ 30 วัน</label>
+      <div class="lerr" id="l-err" role="alert"></div>
+      <div><button class="btn" type="submit" id="l-go">เข้าสู่ระบบ</button></div>
+    </form>
+    <div class="lfoot">ตารางชีวิต &copy; 2569</div>
+  </div>
+</div>
+<div class="shell" id="app" hidden>
   <div class="banner">
     <div>
       <div class="en">Weekly Planner</div>
@@ -203,7 +228,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
       <ul>
         <li><a href="#set" data-v="set">ตั้งค่า</a></li>
       </ul>
-      <div class="note">บันทึกอัตโนมัติ</div>
+      <div class="note">บันทึกอัตโนมัติ · <a href="#" id="logout">ออกจากระบบ</a></div>
     </nav>
 
     <main>
@@ -310,6 +335,14 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
         <h3>ข้อมูล</h3>
         <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="setClearEx">ลบรายการตัวอย่าง</button><button class="btn sm" type="button" id="setClearDone">ลบงานที่เสร็จแล้ว</button><button class="btn sm" type="button" id="setClearPast">ลบนัดที่ผ่านไปแล้ว</button></div>
         <div class="alert" id="set-msg" hidden></div>
+        <h3>เปลี่ยนรหัสผ่าน</h3>
+        <form id="pwf" autocomplete="off" style="display:grid;grid-template-columns:minmax(0,1fr);gap:4px;max-width:320px;font-size:11px">
+          <label for="pw-old">รหัสผ่านเดิม</label><input type="password" id="pw-old" autocomplete="current-password" required>
+          <label for="pw-new">รหัสผ่านใหม่ (อย่างน้อย 8 ตัว)</label><input type="password" id="pw-new" autocomplete="new-password" minlength="8" required>
+          <label for="pw-new2">พิมพ์รหัสผ่านใหม่อีกครั้ง</label><input type="password" id="pw-new2" autocomplete="new-password" minlength="8" required>
+          <div><button class="btn sm" type="submit">เปลี่ยนรหัสผ่าน</button></div>
+          <div class="alert" id="pw-msg" hidden></div>
+        </form>
         <h3>สำรองข้อมูล</h3>
         <div style="font-size:11px">ระบบสำรองไว้ในเครื่องให้อัตโนมัติวันละครั้ง ก่อนการแก้ไขครั้งแรกของวัน และเก็บไว้ 20 ชุดล่าสุด ข้อมูลทั้งหมดอยู่ใน iPad เครื่องนี้เท่านั้น ควรกดส่งออกเป็นไฟล์เก็บไว้ใน iCloud Drive หรือที่อื่นเป็นระยะ</div>
         <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="bkNow">สำรองตอนนี้</button><button class="btn sm" type="button" id="bkDown">ส่งออกไฟล์ .json</button><button class="btn sm" type="button" id="bkImpBtn">นำเข้าจากไฟล์</button><input type="file" id="bkImp" accept=".json,application/json" hidden></div>
@@ -790,7 +823,55 @@ $('bkImp').addEventListener('change',()=>{
 
 function renderAll(){renderGrid();renderToday();renderList();renderTasks();renderSum();renderCal()}
 renderLegend(); resetForm(); renderAll(); renderUndo();
-loadLocal();
+/* ---------- login ---------- */
+const AUTH_DEFAULT={salt:'88Nrxv17kB56DUMWmFNo8g==',hash:'D7G5uORqCQF2plCaTS9441ihlwKEhuoD6k7gHudmVnA=',it:210000};
+const PWKEY='lifereg.pw', REMKEY='lifereg.auth', SESKEY='lifereg.session';
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u))), unb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+function authRec(){try{const r=JSON.parse(localStorage.getItem(PWKEY)||'null');if(r&&r.salt&&r.hash)return r}catch(e){}return AUTH_DEFAULT}
+async function derive(pw,saltB64,it){
+  const key=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  return b64(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:unb64(saltB64),iterations:it},key,256));
+}
+async function checkPw(pw){const r=authRec();return (await derive(pw,r.salt,r.it||210000))===r.hash}
+function remembered(){try{const r=JSON.parse(localStorage.getItem(REMKEY)||'null');if(r&&r.until>Date.now())return true}catch(e){}try{return sessionStorage.getItem(SESKEY)==='1'}catch(e){return false}}
+let started=false;
+function unlock(){
+  $('lock').hidden=true; $('app').hidden=false;
+  if(!started){started=true;loadLocal();}
+}
+function lockApp(){
+  try{localStorage.removeItem(REMKEY);sessionStorage.removeItem(SESKEY)}catch(e){}
+  $('app').hidden=true; $('lock').hidden=false; $('l-pw').value=''; $('l-err').textContent='';
+  location.reload();
+}
+let fails=0, waitUntil=0;
+$('lf').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const err=$('l-err');
+  if(!window.crypto||!crypto.subtle){err.textContent='เบราว์เซอร์นี้เข้าสู่ระบบไม่ได้ ต้องเปิดผ่านลิงก์ https';return}
+  if(Date.now()<waitUntil){err.textContent='ใส่ผิดหลายครั้ง รอ '+Math.ceil((waitUntil-Date.now())/1000)+' วินาทีแล้วลองใหม่';return}
+  $('l-go').disabled=true; err.textContent='กำลังตรวจสอบ...';
+  let ok=false; try{ok=await checkPw($('l-pw').value)}catch(e){}
+  $('l-go').disabled=false;
+  if(!ok){fails++; if(fails>=5){waitUntil=Date.now()+30000;fails=0} err.textContent='รหัสผ่านไม่ถูกต้อง'; $('l-pw').select(); return}
+  fails=0; err.textContent='';
+  try{ if($('l-rem').checked) localStorage.setItem(REMKEY,JSON.stringify({until:Date.now()+30*86400000})); sessionStorage.setItem(SESKEY,'1'); }catch(e){}
+  $('l-pw').value=''; unlock();
+});
+$('logout').addEventListener('click',ev=>{ev.preventDefault();lockApp()});
+$('pwf').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const m=$('pw-msg'), say=(t,ok)=>{m.hidden=false;m.className='alert'+(ok?' okay':'');m.textContent=t};
+  const o=$('pw-old').value,n=$('pw-new').value,n2=$('pw-new2').value;
+  if(n.length<8) return say('รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัว');
+  if(n!==n2) return say('รหัสผ่านใหม่สองช่องไม่ตรงกัน');
+  let ok=false; try{ok=await checkPw(o)}catch(e){}
+  if(!ok) return say('รหัสผ่านเดิมไม่ถูกต้อง');
+  const salt=b64(crypto.getRandomValues(new Uint8Array(16)));
+  try{localStorage.setItem(PWKEY,JSON.stringify({salt,hash:await derive(n,salt,210000),it:210000}));$('pwf').reset();say('เปลี่ยนรหัสผ่านแล้ว ใช้รหัสใหม่ตั้งแต่ครั้งถัดไป',true)}
+  catch(e){say('เปลี่ยนรหัสผ่านไม่สำเร็จ')}
+});
+if(remembered()) unlock(); else { $('lock').hidden=false; setTimeout(()=>{try{$('l-pw').focus()}catch(e){}},50); }
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 if('serviceWorker' in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 })();

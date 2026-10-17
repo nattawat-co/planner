@@ -1,6 +1,6 @@
 // ตารางชีวิต service worker: keeps the app usable offline.
 // Bump VERSION whenever you change any file, so iPads pick up the update.
-const VERSION = 'lifetable-v1';
+const VERSION = 'lifetable-v2';
 const SHELL = [
   './',
   './index.html',
