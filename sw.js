@@ -1,6 +1,6 @@
-// Nattawat's Schedule service worker: keeps the app usable offline.
+// Weekly Planner service worker: keeps the app usable offline.
 // Bump VERSION whenever you change any file, so iPads pick up the update.
-const VERSION = 'lifetable-v8';
+const VERSION = 'lifetable-v9';
 const SHELL = [
   './',
   './index.html',
@@ -46,14 +46,4 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   event.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
-});
-
-// Tapping a reminder opens (or focuses) the app on the today page.
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const url = (event.notification.data && event.notification.data.url) || './#today';
-  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
-    for (const c of list) { if ('focus' in c) { c.navigate && c.navigate(url).catch(() => {}); return c.focus(); } }
-    return self.clients.openWindow(url);
-  }));
 });

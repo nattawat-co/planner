@@ -1,6 +1,6 @@
 {
-  "name": "Nattawat's Schedule",
-  "short_name": "Nattawat's Schedule",
+  "name": "Weekly Planner",
+  "short_name": "Planner",
   "description": "ตารางรายสัปดาห์ ปฏิทิน นัด และงานค้าง",
   "lang": "th",
   "start_url": "./",
