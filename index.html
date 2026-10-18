@@ -6,7 +6,7 @@
 <title>Nattawat's Schedule</title>
 <meta name="description" content="ตารางรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#990033">
+<meta name="theme-color" content="#000080">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -208,8 +208,76 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
   table.t td,table.t th{padding:5px 6px}
   .marquee{padding:6px 10px;font-size:12px;align-items:center}
 }
+
+/* ===== CLASSIC: plain late-90s Thai homepage. White page, Times, default blue links, bevelled tables, grey buttons. ===== */
+:root[data-skin="classic"]{--body:#FFFFFF;--paper:#FFFFFF;--ink:#000000;--muted:#555555;--grid:#808080;--maroon:#000080;--pink:#C0C0C0;--pink2:#E0E0E0;--pink3:#FFFFFF;--hl:#FFFF00;
+  --link:#0000EE;--visited:#551A8B;--hover:#FF0000;--warn:#FF0000;--ok:#008000;--title:#000000;--row2:#FFFFFF;--off:#F0F0F0;
+  --c-study:#CCFFFF;--c-act:#FFCC99;--c-tutor:#CCFFCC;--c-self:#FFCCFF;--c-other:#FFFF99;
+  --f-ui:"Times New Roman",Times,Tahoma,serif}
+[data-skin="classic"] body{font-size:15px;line-height:1.4}
+[data-skin="classic"] body::before{background:#000080}
+[data-skin="classic"] .shell{border:0;max-width:980px}
+[data-skin="classic"] .banner{background:#FFFFFF;color:#000;padding:10px 4px 6px;border-bottom:3px double #000}
+[data-skin="classic"] .banner h1{font-size:28px;font-weight:700;font-style:normal;letter-spacing:.5px;color:#000080}
+[data-skin="classic"] .banner .en{font-style:italic;font-size:13px;color:#555}
+[data-skin="classic"] .banner .en::before{content:"~ "}[data-skin="classic"] .banner .en::after{content:" ~"}
+[data-skin="classic"] .banner .clock,[data-skin="classic"] .banner .clock b,[data-skin="classic"] .banner .cd{color:#000;font-size:13px}
+[data-skin="classic"] .banner .cd b{color:#FF0000}
+[data-skin="classic"] .brand img{filter:invert(1);height:44px}
+[data-skin="classic"] #lock .lh.brand img{filter:none}
+[data-skin="classic"] .marquee{background:#FFFFCC;color:#000;border-bottom:1px solid #808080;overflow:hidden;font-size:13px;padding:3px 4px}
+[data-skin="classic"] .marquee b{color:#FF0000}
+[data-skin="classic"] #news{overflow:visible;text-overflow:clip;flex:1;animation:cl-mq 16s linear infinite}
+[data-skin="classic"] .ur{position:relative;z-index:1;background:#FFFFCC;padding-left:8px}
+[data-skin="classic"] .ur a,[data-skin="classic"] .ur a:visited{color:#0000EE}
+[data-skin="classic"] .ur a[aria-disabled="true"]{color:#999}
+@media (max-width:720px){[data-skin="classic"] .banner .clock{text-align:left}}
+@keyframes cl-mq{from{transform:translateX(70%)}to{transform:translateX(-100%)}}
+[data-skin="classic"] nav.menu{background:#FFFFFF;border-right:1px solid #808080;font-size:14px}
+[data-skin="classic"] .menu .mh{background:none;color:#000;padding:8px 6px 2px;border-bottom:1px solid #000;font-size:14px}
+[data-skin="classic"] .menu .mh::before{content:"» "}
+[data-skin="classic"] .menu a{text-decoration:underline}
+[data-skin="classic"] .menu a.on{color:#000;text-decoration:none;background:#FFFF00}
+[data-skin="classic"] main{padding:10px 12px 16px}
+[data-skin="classic"] h2{font-size:20px;color:#000080;border-bottom:0;padding-bottom:4px}
+[data-skin="classic"] h2::after{content:"";display:block;height:0;border-top:2px groove #C0C0C0;margin-top:4px}
+[data-skin="classic"] h3{font-size:15px;color:#000;text-decoration:underline}
+[data-skin="classic"] table.t{background:#FFFFFF;border:2px outset #C0C0C0;border-spacing:2px;font-size:14px}
+[data-skin="classic"] table.t th{background:#C0C0C0;color:#000;border:1px outset #E0E0E0}
+[data-skin="classic"] table.t td{border:1px inset #C0C0C0}
+[data-skin="classic"] table.grid{background:#808080;font-size:11px}
+[data-skin="classic"] table.grid thead th{background:#000080;color:#FFF}
+[data-skin="classic"] table.grid th.day{background:#C0C0C0}
+[data-skin="classic"] table.grid th.day.today{background:#FFFF00}
+[data-skin="classic"] table.cal{background:#808080}
+[data-skin="classic"] table.cal th{background:#000080}
+[data-skin="classic"] .box{border:2px groove #C0C0C0;background:#FFFFFF;padding:6px 8px}
+[data-skin="classic"] .box .k{color:#000080;font-size:15px}
+[data-skin="classic"] form.f{border:2px outset #C0C0C0;background:#C0C0C0}
+[data-skin="classic"] form.f .fh{background:linear-gradient(90deg,#000080,#1084D0);color:#FFF;font-family:Tahoma,sans-serif;font-size:12px;padding:3px 6px}
+[data-skin="classic"] form.f .fb{font-size:14px}
+[data-skin="classic"] .btn,[data-skin="classic"] button{background:#C0C0C0;color:#000;-webkit-text-fill-color:#000;border:2px outset #FFFFFF;border-radius:0;font-family:Tahoma,sans-serif;font-size:12px;padding:2px 10px}
+[data-skin="classic"] .btn:active,[data-skin="classic"] button:active{border-style:inset}
+[data-skin="classic"] input[type=text],[data-skin="classic"] input[type=date],[data-skin="classic"] input[type=email],[data-skin="classic"] input[type=password],[data-skin="classic"] select,[data-skin="classic"] textarea{border:2px inset #C0C0C0;border-radius:0;background:#FFF;font-family:Tahoma,sans-serif}
+[data-skin="classic"] .now-card{border:3px double #000;background:#FFFFFF}
+[data-skin="classic"] .now-card .big{font-size:22px;color:#000080}
+[data-skin="classic"] .prog{background:#FFF;border:1px inset #C0C0C0;height:12px}
+[data-skin="classic"] .prog > div{background:repeating-linear-gradient(90deg,#000080 0 8px,transparent 8px 10px)}
+[data-skin="classic"] .bar{background:#000080;height:11px}
+[data-skin="classic"] .placebar{border:2px outset #C0C0C0;background:#FFFFCC}
+[data-skin="classic"] footer{border-top:3px double #000;color:#000;font-size:12px;line-height:1.8}
+[data-skin="classic"] #lock .lbox{border:2px outset #C0C0C0;background:#C0C0C0}
+[data-skin="classic"] #lock .lh{background:linear-gradient(90deg,#000080,#1084D0)}
+[data-skin="classic"] #lock .lsub{background:#C0C0C0;color:#000;border-bottom:1px solid #808080}
+[data-skin="classic"] #lock .lfoot{color:#000}
+[data-skin="classic"] .st-new{color:#FF0000;font-weight:700;animation:cl-blink 1s steps(1) infinite}
+@keyframes cl-blink{50%{visibility:hidden}}
+@media (prefers-reduced-motion:reduce){[data-skin="classic"] #news,[data-skin="classic"] .st-new{animation:none}}
+.cl-only{display:none}
+[data-skin="classic"] .cl-only{display:block}
+.counter{display:inline-block;background:#000;color:#00FF00;font-family:"Courier New",monospace;font-weight:700;letter-spacing:2px;padding:0 4px;border:2px inset #808080}
 </style>
-<script>try{var k=localStorage.getItem('lifereg.skin');if(k&&k!=='pink')document.documentElement.dataset.skin=k}catch(e){}</script>
+<script>try{var k=localStorage.getItem('lifereg.skin');if(!k)k='classic';if(k!=='pink')document.documentElement.dataset.skin=k}catch(e){document.documentElement.dataset.skin='classic'}</script>
 </head>
 <body>
 <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs><linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CCBFF"/><stop offset="1" stop-color="#1F5FD6"/></linearGradient>
@@ -407,6 +475,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
         <div class="scroll" style="border:0"><table class="t" style="max-width:420px">
           <thead><tr><th>เลือก</th><th>สี</th><th>ตัวอย่าง</th></tr></thead>
           <tbody>
+            <tr><td class="ctr"><input type="radio" name="skin" id="sk-classic" data-skin="classic"></td><td><label for="sk-classic">คลาสสิก (เว็บยุคเก่า)</label></td><td><span class="sw" style="background:#FFFFFF"></span><span class="sw" style="background:#C0C0C0"></span><span class="sw" style="background:#000080"></span></td></tr>
             <tr><td class="ctr"><input type="radio" name="skin" id="sk-pink" data-skin="pink"></td><td><label for="sk-pink">ชมพู</label></td><td><span class="sw" style="background:#990033"></span><span class="sw" style="background:#CC6699"></span><span class="sw" style="background:#FFCCE5"></span></td></tr>
             <tr><td class="ctr"><input type="radio" name="skin" id="sk-blue" data-skin="blue"></td><td><label for="sk-blue">น้ำเงิน</label></td><td><span class="sw" style="background:#003399"></span><span class="sw" style="background:#6699CC"></span><span class="sw" style="background:#CCE0FF"></span></td></tr>
             <tr><td class="ctr"><input type="radio" name="skin" id="sk-green" data-skin="green"></td><td><label for="sk-green">เขียว</label></td><td><span class="sw" style="background:#006633"></span><span class="sw" style="background:#669966"></span><span class="sw" style="background:#CCFFCC"></span></td></tr>
@@ -471,7 +540,12 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
       </section>
     </main>
   </div>
-  <footer>สถานะ: <span id="st">กำลังโหลด...</span><br>Nattawat's Schedule &copy; 2569</footer>
+  <footer>
+    <div class="cl-only">[ <a href="#" id="toTop">กลับขึ้นด้านบน</a> ]</div>
+    สถานะ: <span id="st">กำลังโหลด...</span><br>
+    <div class="cl-only">ปรับปรุงล่าสุด: <span id="lastUp">-</span><br>เปิดแอปครั้งที่ <span class="counter" id="visits">000000</span><br><small>แสดงผลดีที่สุดที่ความละเอียด 800x600 ขึ้นไป</small></div>
+    Nattawat's Schedule &copy; 2569
+  </footer>
 </div>
 
 <script>
@@ -568,7 +642,8 @@ function loadLocal(){
 let fbUser=null, docRef=null, bkRef=null, unsubDoc=null;
 const nowHM=()=>fmt(new Date().getHours()*60+new Date().getMinutes());
 function persist(){
-  try{localStorage.setItem(LKEY,JSON.stringify(state))}catch(e){}
+  try{localStorage.setItem(LKEY,JSON.stringify(state));localStorage.setItem('lifereg.lastup',String(Date.now()))}catch(e){}
+  showLastUp();
   if(!docRef){setStatus('บันทึกในเครื่องแล้ว '+nowHM()+' น.');return}
   setDoc(docRef,{...clone(state),updatedAt:serverTimestamp()})
     .catch(e=>setStatus('บันทึกขึ้นคลาวด์ไม่สำเร็จ ('+((e&&e.code)||'error')+') ข้อมูลยังอยู่ในเครื่อง'));
@@ -589,6 +664,7 @@ function startSync(u){
       loaded=true; mode='cloud'; syncBase(); renderAll(); persist(); return;
     }
     if(md.hasPendingWrites&&loaded) return;
+    try{const ua=snap.data().updatedAt;if(ua&&ua.toMillis)localStorage.setItem('lifereg.lastup',String(ua.toMillis()))}catch(e){}
     state=normalize(snap.data()); loaded=true; mode='cloud'; syncBase();
     try{localStorage.setItem(LKEY,JSON.stringify(state))}catch(e){}
     renderAll(); renderUndo();
@@ -796,7 +872,7 @@ function renderBannerCd(){
   const t=isoDay(new Date()), c=state.countdowns.filter(x=>x.pin!==false&&x.date>=t).sort((p,q)=>p.date.localeCompare(q.date))[0], el=$('cdBanner');
   if(!loaded||!c){el.hidden=true;return}
   const n=daysLeft(c.date); el.hidden=false;
-  el.innerHTML=`${esc(c.title)} <b>${n===0?'วันนี้!':'อีก '+n+' วัน'}</b>`;
+  el.innerHTML=`${n<=7?'<span class="st-new">ด่วน!</span> ':''}${esc(c.title)} <b>${n===0?'วันนี้!':'อีก '+n+' วัน'}</b>`;
 }
 function tlRow(x,now,isToday){
   const s=toMin(x.start),e=toMin(x.end), cur=isToday&&now>=s&&now<e, past=isToday&&now>=e;
@@ -1074,7 +1150,7 @@ $('cNow').addEventListener('click',()=>{const t=new Date();calY=t.getFullYear();
 /* ---------- skins ---------- */
 const SKEY='lifereg.skin';
 function applySkin(k){
-  if(!['pink','blue','green','gray','dark'].includes(k)) k='pink';
+  if(!['classic','pink','blue','green','gray','dark'].includes(k)) k='classic';
   if(k==='pink') delete document.documentElement.dataset.skin; else document.documentElement.dataset.skin=k;
   document.querySelectorAll('input[data-skin]').forEach(r=>{r.checked=r.dataset.skin===k});
 }
@@ -1083,7 +1159,7 @@ function setMsg(t){const m=$('set-msg');m.hidden=false;m.className='alert okay';
 $('setClearEx').addEventListener('click',()=>{const n=[...state.entries,...state.tasks,...state.events].filter(x=>x.example).length;state.entries=state.entries.filter(x=>!x.example);state.tasks=state.tasks.filter(x=>!x.example);state.events=state.events.filter(x=>!x.example);commit('ลบตัวอย่าง');setMsg(`ลบรายการตัวอย่าง ${n} รายการแล้ว`)});
 $('setClearDone').addEventListener('click',()=>{const n=state.tasks.filter(t=>t.done).length;state.tasks=state.tasks.filter(t=>!t.done);commit('ลบงานที่เสร็จ');setMsg(`ลบงานที่เสร็จแล้ว ${n} งาน`)});
 $('setClearPast').addEventListener('click',()=>{const t=isoDay(new Date()),n=state.events.filter(e=>e.date<t).length;state.events=state.events.filter(e=>e.date>=t);commit('ลบนัดที่ผ่านไป');setMsg(`ลบนัดที่ผ่านไปแล้ว ${n} รายการ`)});
-try{applySkin(localStorage.getItem(SKEY)||'pink')}catch(e){applySkin('pink')}
+try{applySkin(localStorage.getItem(SKEY)||'classic')}catch(e){applySkin('classic')}
 
 /* ---------- backup UI ---------- */
 function bkMsg(t,ok){const m=$('bk-msg');m.hidden=!t;m.className='alert'+(ok?' okay':'');m.textContent=t||''}
@@ -1265,7 +1341,10 @@ $('icsDown').addEventListener('click',async()=>{
   }catch(e){say(e&&e.name==='AbortError'?'ยกเลิกแล้ว':'ส่งออกไม่สำเร็จ')}
 });
 
-function renderAll(){rebuildCats();renderLegend();renderGrid();renderToday();renderList();renderTasks();renderCd();renderSum();renderCal();renderCats();renderHol();renderNt();if(editing&&editing.kind==='entry')renderOcc()}
+function showLastUp(){try{const t=+localStorage.getItem('lifereg.lastup');$('lastUp').textContent=t?stamp(t):'-'}catch(e){}}
+(function(){let v=0;try{v=(+localStorage.getItem('lifereg.visits')||0)+1;localStorage.setItem('lifereg.visits',String(v))}catch(e){}$('visits').textContent=String(v).padStart(6,'0')})();
+$('toTop').addEventListener('click',ev=>{ev.preventDefault();window.scrollTo(0,0)});
+function renderAll(){showLastUp();rebuildCats();renderLegend();renderGrid();renderToday();renderList();renderTasks();renderCd();renderSum();renderCal();renderCats();renderHol();renderNt();if(editing&&editing.kind==='entry')renderOcc()}
 rebuildCats(); resetForm(); renderAll(); renderUndo();
 /* ---------- login (Firebase Auth) ---------- */
 const AUTH_ERR={'auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/user-not-found':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/invalid-email':'รูปแบบอีเมลไม่ถูกต้อง','auth/too-many-requests':'ลองผิดหลายครั้ง รอสักครู่แล้วลองใหม่','auth/network-request-failed':'ไม่มีอินเทอร์เน็ต เข้าสู่ระบบครั้งแรกต้องออนไลน์','auth/operation-not-allowed':'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยอีเมลใน Firebase','auth/user-disabled':'บัญชีนี้ถูกปิดใช้งาน','auth/missing-password':'ใส่รหัสผ่านก่อน','auth/weak-password':'รหัสผ่านใหม่สั้นเกินไป','auth/requires-recent-login':'เข้าสู่ระบบใหม่อีกครั้งแล้วลองเปลี่ยนรหัสผ่าน'};
