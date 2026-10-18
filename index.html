@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nattawat's Schedule</title>
-<meta name="description" content="ตารางชีวิตรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
+<meta name="description" content="Nattawat's Scheduleรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#990033">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ตารางชีวิต">
+<meta name="apple-mobile-web-app-title" content="Nattawat's Schedule">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
@@ -364,7 +364,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
       </section>
     </main>
   </div>
-  <footer>สถานะ: <span id="st">กำลังโหลด...</span><br>ตารางชีวิต &copy; 2569</footer>
+  <footer>สถานะ: <span id="st">กำลังโหลด...</span><br>Nattawat's Schedule &copy; 2569</footer>
 </div>
 
 <script>
@@ -846,7 +846,7 @@ $('bktab').addEventListener('click',async ev=>{
     try{deleteDoc(doc(bkRef,d.dataset.bdel)).catch(()=>{});bkList=bkList.filter(b=>b.id!==d.dataset.bdel);setTimeout(renderBackups,400)}catch(e){bkMsg('ลบไม่สำเร็จ')}}
 });
 $('bkDown').addEventListener('click',async()=>{
-  const json=JSON.stringify({app:'ตารางชีวิต',version:1,exportedAt:new Date().toISOString(),...clone(state)},null,2);
+  const json=JSON.stringify({app:'Nattawat's Schedule',version:1,exportedAt:new Date().toISOString(),...clone(state)},null,2);
   const name='lifetable-backup-'+isoDay(new Date())+'.json';
   try{
     const file=new File([json],name,{type:'application/json'});
