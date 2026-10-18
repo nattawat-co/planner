@@ -42,6 +42,9 @@ a:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible,td
 .banner h1{margin:0;font-size:18px;font-weight:700}
 .banner .en{font-size:11px;color:var(--pink2)}
 .banner .clock{font-size:11px;text-align:right;color:var(--pink2)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{height:34px;width:auto;flex:none}
+#lock .lh.brand img{height:30px}
 .banner .clock b{color:#FFFFFF;font-size:12px}
 .marquee{background:var(--pink);color:#FFFFFF;padding:2px 10px;font-size:11px;display:flex;justify-content:space-between;gap:12px}
 #news{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -186,7 +189,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 
 <div id="lock">
   <div class="lbox">
-    <div class="lh"><span>Weekly Planner</span><b>Nattawat's Schedule</b></div>
+    <div class="lh brand"><img src="logo.svg" alt="" width="40" height="30"><div><span>Weekly Planner</span><b>Nattawat's Schedule</b></div></div>
     <div class="lsub">เข้าสู่ระบบ</div>
     <div id="l-wait" style="padding:14px 12px;font-size:12px">กำลังตรวจสอบการเข้าสู่ระบบ...</div>
     <form id="lf" autocomplete="on" hidden>
@@ -202,9 +205,12 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 </div>
 <div class="shell" id="app" hidden>
   <div class="banner">
-    <div>
+    <div class="brand">
+      <img src="logo.svg" alt="" width="46" height="34">
+      <div>
       <div class="en">Weekly Planner</div>
       <h1>Nattawat's Schedule</h1>
+      </div>
     </div>
     <div class="clock"><span id="nowdate">-</span><br><b id="nowtime">--:--</b> น.</div>
   </div>

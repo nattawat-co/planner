@@ -1,10 +1,11 @@
 // Nattawat's Schedule service worker: keeps the app usable offline.
 // Bump VERSION whenever you change any file, so iPads pick up the update.
-const VERSION = 'lifetable-v4';
+const VERSION = 'lifetable-v5';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './logo.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png'
