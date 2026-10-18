@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nattawat's Schedule</title>
-<meta name="description" content="Nattawat's Scheduleรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
+<meta name="description" content="ตารางรายสัปดาห์ ปฏิทิน นัด และงานค้าง">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#990033">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -846,7 +846,7 @@ $('bktab').addEventListener('click',async ev=>{
     try{deleteDoc(doc(bkRef,d.dataset.bdel)).catch(()=>{});bkList=bkList.filter(b=>b.id!==d.dataset.bdel);setTimeout(renderBackups,400)}catch(e){bkMsg('ลบไม่สำเร็จ')}}
 });
 $('bkDown').addEventListener('click',async()=>{
-  const json=JSON.stringify({app:'Nattawat's Schedule',version:1,exportedAt:new Date().toISOString(),...clone(state)},null,2);
+  const json=JSON.stringify({app:"Nattawat's Schedule",version:1,exportedAt:new Date().toISOString(),...clone(state)},null,2);
   const name='lifetable-backup-'+isoDay(new Date())+'.json';
   try{
     const file=new File([json],name,{type:'application/json'});

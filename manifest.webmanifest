@@ -1,7 +1,7 @@
 {
-  "name": "ตารางชีวิต",
-  "short_name": "ตารางชีวิต",
-  "description": "ตารางชีวิตรายสัปดาห์ ปฏิทิน นัด และงานค้าง",
+  "name": "Nattawat's Schedule",
+  "short_name": "Nattawat's Schedule",
+  "description": "ตารางรายสัปดาห์ ปฏิทิน นัด และงานค้าง",
   "lang": "th",
   "start_url": "./",
   "scope": "./",
