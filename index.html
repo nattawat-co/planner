@@ -14,7 +14,6 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <style>
-/* Layout: early-2000s portal built the way those pages were: centered fixed-width shell (~980px for 1024x768 screens), flat bgcolor banner, left menu column, tables drawn with 1px cellspacing over a grey table background, native form controls, Tahoma at small pixel sizes, web-safe pastels. Single light theme by choice. */
 :root{
   --body:#EEEEEE; --paper:#FFFFFF; --ink:#000000; --muted:#666666; --grid:#999999;
   --maroon:#990033; --pink:#CC6699; --pink2:#FFCCE5; --pink3:#FFF0F5; --hl:#FFFF99;
@@ -74,8 +73,8 @@ table.t tr:nth-child(even) td{background:var(--row2)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 .ctr{text-align:center}
 .scroll{overflow-x:auto}
-/* timetable grid */
-table.grid{border-collapse:separate;border-spacing:1px;background:var(--grid);font-size:10px;table-layout:fixed;min-width:100%}
+
+  table.grid{border-collapse:separate;border-spacing:1px;background:var(--grid);font-size:10px;table-layout:fixed;min-width:100%}
 table.grid th,table.grid td{padding:0;background:var(--paper)}
 table.grid thead th{background:var(--maroon);color:#FFFFFF;font-weight:700;height:18px}
 table.grid th.day{background:var(--pink2);color:var(--ink);width:62px;min-width:62px;line-height:1.25;padding:2px;font-weight:700}
@@ -115,7 +114,7 @@ table.cal td.sel{background:var(--pink2)}
 .box .k{color:var(--title);font-weight:700}
 .todaygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
 .todaygrid > div{min-width:0}
-/* forms */
+
 form.f{border:1px solid var(--pink);background:var(--pink3)}
 form.f .fh{background:var(--pink);color:#FFFFFF;font-weight:700;padding:2px 6px;font-size:11px}
 form.f .fb{padding:6px 8px;display:grid;grid-template-columns:100px minmax(0,1fr);gap:4px 8px;align-items:center;font-size:11px}
