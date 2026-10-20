@@ -142,14 +142,12 @@ tr.done td.keep{text-decoration:none}
 .empty{color:var(--muted)}
 .ex{color:#FF6600;font-size:10px}
 footer{border-top:1px solid var(--grid);color:var(--muted);font-size:10px;padding:6px 10px;text-align:center;line-height:1.6}
-/* base reset (no host skeleton here) */
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 img{max-width:100%}
 body{margin:0;-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--maroon);z-index:10}
 .shell{max-width:1200px}
-/* lock screen */
 #lock{min-height:80vh;display:flex;align-items:center;justify-content:center;padding-block:24px}
 #lock .lbox{width:100%;max-width:340px;background:var(--paper);border:1px solid var(--grid)}
 #lock .lh{background:var(--maroon);color:#FFFFFF;padding:8px 10px}
@@ -160,7 +158,6 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 #lock input[type=password]{width:100%;font-size:16px;min-height:34px}
 #lock .lerr{color:var(--warn);font-weight:700;min-height:1.3em}
 #lock .lfoot{border-top:1px solid var(--grid);color:var(--muted);font-size:10px;padding:4px 10px;text-align:center}
-/* touch / iPad */
 html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
 @media (pointer:coarse){
   body{font-size:13px}
@@ -182,7 +179,6 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
   .marquee{padding:6px 10px;font-size:12px;align-items:center}
 }
 
-/* time range picking + shared view */
 .dt2{display:flex;flex-wrap:wrap;gap:4px}
 input[type=time]{max-width:100%}
 .durs{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
@@ -196,11 +192,8 @@ table.grid td.blk.busy,.ad.busy,.busysw{background-color:var(--busy)!important;b
 table.grid td.blk.busy:hover{color:var(--busyink)}
 table.grid th.day .ad.busy{text-decoration:none;cursor:default;padding:0 2px}
 table.grid th.day .ad.busy::before{content:""}
-.privsw{background-color:var(--paper)!important;background-image:repeating-linear-gradient(135deg,transparent 0 3px,var(--busyline) 3px 4px)!important;border-color:var(--busyink)}
-table.grid td.blk.priv{box-shadow:inset 0 0 0 1px var(--busyink);background-image:repeating-linear-gradient(135deg,transparent 0 9px,var(--busyline) 9px 10px)!important}
 table.grid td.slot.ro{cursor:default}
 table.grid td.slot.ro:hover{background:var(--paper)}
-.privtag{color:var(--muted);font-size:10px}
 #sv{display:none}
 .viewing #lock,.viewing #app{display:none!important}
 .viewing #sv{display:block}
@@ -263,7 +256,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
     </nav>
 
     <main>
-      <!-- WEEK -->
       <section class="view" id="v-week">
         <h2>ตารางสัปดาห์</h2>
         <div class="wk"><button class="btn sm" type="button" id="wPrev">« สัปดาห์ก่อน</button><button class="btn sm" type="button" id="wNow">สัปดาห์นี้</button><button class="btn sm" type="button" id="wNext">สัปดาห์หน้า »</button><b id="wTitle"></b></div>
@@ -278,7 +270,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
         <div id="exnote" hidden class="box">ตอนนี้มีรายการ<span class="ex">ตัวอย่าง</span>อยู่ <button class="btn sm danger" id="clearEx" type="button">ลบตัวอย่าง</button></div>
       </section>
 
-      <!-- ADD -->
       <section class="view" id="v-add" hidden>
         <h2 id="formTitle">เพิ่มรายการ</h2>
         <form class="f" id="ef" autocomplete="off">
@@ -296,10 +287,12 @@ table.grid td.slot.ro:hover{background:var(--paper)}
             <div class="rw"><input type="time" id="e-start" step="60" aria-label="เวลาเริ่ม"> ถึง <input type="time" id="e-end" step="60" aria-label="เวลาจบ"></div>
             <span class="l ro">ทั้งวัน</span>
             <div class="ro"><label><input type="checkbox" id="e-allday"> ทั้งวัน (ไม่ระบุเวลา)</label></div>
-            <label class="l ro" for="e-date">เริ่ม *</label>
-            <div class="ro dt2"><input type="date" id="e-date" aria-label="วันเริ่ม"><input type="time" id="e-ostart" class="tm" step="60" aria-label="เวลาเริ่ม"></div>
-            <label class="l ro" for="e-edate">จบ *</label>
-            <div class="ro dt2"><input type="date" id="e-edate" aria-label="วันจบ"><input type="time" id="e-oend" class="tm" step="60" aria-label="เวลาจบ"></div>
+            <label class="l ro" for="e-date">วันที่ *</label>
+            <div class="ro"><input type="date" id="e-date"></div>
+            <label class="l ro tm" for="e-ostart">เวลา *</label>
+            <div class="ro tm"><input type="time" id="e-ostart" step="60" aria-label="เวลาเริ่ม"> ถึง <input type="time" id="e-oend" step="60" aria-label="เวลาจบ"></div>
+            <label class="l rw" for="e-from">ช่วงวันที่</label>
+            <div class="rw"><div class="dt2"><span>เริ่ม <input type="date" id="e-from" aria-label="เริ่มวันที่"></span><span>ถึง <input type="date" id="e-until" aria-label="ถึงวันที่"></span></div><div class="empty" style="font-size:10px;margin-top:2px">ไม่ใส่ก็ได้ ถ้าไม่ใส่จะขึ้นทุกสัปดาห์ไม่มีกำหนด เช่น ใส่วันเปิดเทอมถึงวันปิดเทอม</div></div>
             <span class="l">ระยะเวลา</span>
             <div class="durs"><span id="e-dur" class="durv">-</span><span class="tmq"><button class="btn sm" type="button" data-dur="30">30 นาที</button><button class="btn sm" type="button" data-dur="60">1 ชม.</button><button class="btn sm" type="button" data-dur="90">1.5 ชม.</button><button class="btn sm" type="button" data-dur="120">2 ชม.</button><button class="btn sm" type="button" data-dur="180">3 ชม.</button></span></div>
             <label class="l" for="e-place">สถานที่</label>
@@ -318,10 +311,9 @@ table.grid td.slot.ro:hover{background:var(--paper)}
             </div>
           </div>
         </form>
-        <div class="box" style="font-size:11px">"ทุกสัปดาห์" ใช้กับตารางประจำ เช่น เรียน ชมรม ส่วน "ครั้งเดียว" ใช้กับนัดที่มีวันที่แน่นอน นัดลากข้ามวันได้ เช่น ค่าย 3 วัน หรือเริ่ม 22:00 จบตีสองของอีกวัน ถ้าเวลาชนกับรายการอื่นจะมีคำเตือนก่อนบันทึก<br>ในตารางสัปดาห์ ลากเมาส์คร่อมช่องเพื่อเลือกช่วงเวลาได้เลย บนมือถือให้แตะช่องเวลาเริ่ม แล้วแตะช่องเวลาจบ</div>
+        <div class="box" style="font-size:11px">"ทุกสัปดาห์" ใช้กับตารางประจำ เช่น เรียน ชมรม ตั้งช่วงวันที่ได้ว่าเริ่มสัปดาห์ไหน จบสัปดาห์ไหน ส่วน "ครั้งเดียว" ใช้กับนัดที่มีวันที่แน่นอน ถ้าเวลาชนกับรายการอื่นจะมีคำเตือนก่อนบันทึก<br>ในตารางสัปดาห์ ลากเมาส์คร่อมช่องเพื่อเลือกช่วงเวลาได้เลย บนมือถือให้แตะช่องเวลาเริ่ม แล้วแตะช่องเวลาจบ</div>
       </section>
 
-      <!-- LIST -->
       <section class="view" id="v-list" hidden>
         <h2>รายการทั้งหมด</h2>
         <h3 style="margin-top:0">ตารางประจำ</h3>
@@ -330,7 +322,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
         <div class="scroll" style="border:0"><table class="t" id="vtab"></table></div>
       </section>
 
-      <!-- TASKS -->
       <section class="view" id="v-tasks" hidden>
         <h2>งานค้าง</h2>
         <form class="f" id="tf" autocomplete="off">
@@ -349,7 +340,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
         <div><button class="btn sm" type="button" id="clearDone">ลบงานที่เสร็จ</button></div>
       </section>
 
-      <!-- CAL -->
       <section class="view" id="v-cal" hidden>
         <h2>ปฏิทินเดือน</h2>
         <div class="wk"><button class="btn sm" type="button" id="cPrev">« เดือนก่อน</button><button class="btn sm" type="button" id="cNow">เดือนนี้</button><button class="btn sm" type="button" id="cNext">เดือนหน้า »</button><b id="cTitle"></b></div>
@@ -357,7 +347,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
         <div class="box" id="daybox"></div>
       </section>
 
-      <!-- SETTINGS -->
       <section class="view" id="v-set" hidden>
         <h2>ตั้งค่า</h2>
         <h3 style="margin-top:0">ชื่อตาราง</h3>
@@ -410,7 +399,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
         <div class="scroll" style="border:0"><table class="t" id="bktab"></table></div>
       </section>
 
-      <!-- SUM -->
       <section class="view" id="v-sum" hidden>
         <h2>ชั่วโมงต่อสัปดาห์</h2>
         <div class="scroll" style="border:0"><table class="t" id="stab"></table></div>
@@ -449,7 +437,6 @@ table.grid td.slot.ro:hover{background:var(--paper)}
 </div>
 
 <script>
-/* if the app script cannot load (offline on first open), say so on the login box */
 setTimeout(function(){var w=document.getElementById('l-wait');if(w&&!w.hidden&&!window.__appReady)w.textContent='โหลดระบบไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วเปิดแอปใหม่';},10000);
 </script>
 <script type="module">
@@ -483,8 +470,8 @@ const thDate=d=>`วัน${DAYS[(d.getDay()+6)%7].th}ที่ ${d.getDate()} $
 const isoDay=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 
 let state={entries:[],tasks:[],events:[]};
-let weekOff=0, calY=new Date().getFullYear(), calM=new Date().getMonth(), calSel=null, evEditing=null, slotDate=null;
-let loaded=false, mode='loading', ref=null, editing=null, clashConfirm=null;
+let weekOff=0, calY=new Date().getFullYear(), calM=new Date().getMonth(), calSel=null;
+let loaded=false, editing=null, clashConfirm=null;
 
 function normalize(d){
   const e=Array.isArray(d&&d.entries)?d.entries:[], t=Array.isArray(d&&d.tasks)?d.tasks:[], v=Array.isArray(d&&d.events)?d.events:[];
@@ -493,10 +480,8 @@ function normalize(d){
   return {...(ttl?{title:ttl}:{}),...(sh?{share:sh}:{}),entries:e.filter(x=>x&&x.id&&Array.isArray(x.days)).map(x=>({...x,days:[...x.days]})),tasks:t.filter(x=>x&&x.id).map(x=>({...x})),events:v.filter(x=>x&&x.id&&x.date).map(x=>({...x}))};
 }
 
-/* ---------- persistence ---------- */
 function setStatus(s){$('st').textContent=s}
 function loadLocal(){
-  mode='local';
   let raw=null; try{raw=localStorage.getItem(LKEY); if(raw) state=normalize(JSON.parse(raw));}catch(e){}
   if(raw===null) state=sampleData();
   loaded=true; syncBase(); setStatus('ข้อมูลเก็บไว้ในเครื่องนี้'); renderAll();
@@ -510,14 +495,13 @@ function persist(){
     .catch(e=>setStatus('บันทึกขึ้นคลาวด์ไม่สำเร็จ ('+((e&&e.code)||'error')+') ข้อมูลยังอยู่ในเครื่อง'));
   publishShare();
 }
-/* ---------- sharing: a separate public copy with private items reduced to "busy" times ---------- */
 let shareT=null, shareErr='', shareAt=0, shareGone={};
 function newShareId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789',r=new Uint8Array(20);crypto.getRandomValues(r);return [...r].map(x=>c[x%c.length]).join('')}
 function publicData(){
   const cut=addDays(isoDay(new Date()),-42);
   return {owner:fbUser.uid,title:(state.title||'').trim(),updatedAt:serverTimestamp(),
-    entries:state.entries.filter(x=>!x.example).map(x=>isVis(x)?{days:[...x.days],start:x.start,end:x.end,name:x.name||'',code:codeOf(x),cat:x.cat||'OTHER',place:x.place||''}:{days:[...x.days],start:x.start,end:x.end,busy:true}),
-    events:state.events.filter(e=>!e.example&&evEnd(e)>=cut).map(e=>{const b={date:e.date,allDay:!!e.allDay,start:e.start||'',end:e.end||'',...(e.endDate?{endDate:e.endDate}:{})};return isVis(e)?{...b,title:e.title||'',cat:e.cat||'OTHER',place:e.place||''}:{...b,busy:true}})};
+    entries:state.entries.filter(x=>!x.example).map(x=>({...(x.from?{from:x.from}:{}),...(x.until?{until:x.until}:{}),...(isVis(x)?{days:[...x.days],start:x.start,end:x.end,name:x.name||'',code:codeOf(x),cat:x.cat||'OTHER',place:x.place||''}:{days:[...x.days],start:x.start,end:x.end,busy:true})})),
+    events:state.events.filter(e=>!e.example&&e.date>=cut).map(e=>{const b={date:e.date,allDay:!!e.allDay,start:e.start||'',end:e.end||''};return isVis(e)?{...b,title:e.title||'',cat:e.cat||'OTHER',place:e.place||''}:{...b,busy:true}})};
 }
 function publishShare(now){
   if(!fbUser||!state.share||!state.share.id) return;
@@ -569,13 +553,12 @@ function startSync(u){
     setStatus(md.hasPendingWrites?'รอซิงก์ขึ้นคลาวด์...':(md.fromCache?'ออฟไลน์ ใช้ข้อมูลในเครื่อง จะซิงก์เมื่อกลับมาออนไลน์':'ซิงก์แล้ว '+nowHM()+' น.'));
     if(!snap.exists()){
       if(md.fromCache){ if(!loaded){ loadLocal(); } return; }
-      // first time on the cloud: bring this device's data (or the samples) up
       let local=null; try{local=JSON.parse(localStorage.getItem(LKEY)||'null')}catch(e){}
       state=hasRealData(local)?normalize(local):sampleData();
-      loaded=true; mode='cloud'; syncBase(); renderAll(); persist(); return;
+      loaded=true; syncBase(); renderAll(); persist(); return;
     }
     if(md.hasPendingWrites&&loaded) return;
-    state=normalize(snap.data()); loaded=true; mode='cloud'; syncBase();
+    state=normalize(snap.data()); loaded=true; syncBase();
     try{localStorage.setItem(LKEY,JSON.stringify(state))}catch(e){}
     renderAll(); renderUndo();
   },err=>{setStatus('เชื่อมคลาวด์ไม่ได้ ('+((err&&err.code)||'error')+') ใช้ข้อมูลในเครื่องไปก่อน'); if(!loaded) loadLocal();});
@@ -606,7 +589,6 @@ document.addEventListener('keydown',ev=>{
   if(k==='z'&&!ev.shiftKey){ev.preventDefault();undo()} else if((k==='z'&&ev.shiftKey)||k==='y'){ev.preventDefault();redo()}
 });
 
-/* ---------- cloud backups ---------- */
 let lastBackupAt=0,backupChecked=false;
 async function makeBackup(data,label){
   if(!bkRef) throw {code:'no-cloud'};
@@ -629,8 +611,6 @@ function sampleData(){
    tasks:[{id:'ex5',title:'ส่งการบ้าน',due:d(3),cat:'STUDY',done:false,example:true}]};
 }
 
-
-/* ---------- navigation ---------- */
 const views=['week','cal','add','list','tasks','sum','set'];
 function show(v){
   if(!views.includes(v)) v='week';
@@ -641,60 +621,34 @@ function show(v){
 document.querySelectorAll('.menu a').forEach(a=>a.addEventListener('click',ev=>{ev.preventDefault();if(a.dataset.v==='add'&&!editing)resetForm();show(a.dataset.v)}));
 const h0=(location.hash||'').replace('#',''); if(h0) show(h0);
 
-/* ---------- clock ---------- */
 function tick(){const d=new Date();$('nowdate').textContent=thDate(d);$('nowtime').textContent=fmt(d.getHours()*60+d.getMinutes());}
 tick(); setInterval(()=>{tick(); if(loaded) renderToday();},30000);
 
-/* ---------- helpers ---------- */
 function dayIdx(d){return (d.getDay()+6)%7}
+function onDate(x,iso,di){return x.days.includes(di??dayIdx(parseIso(iso)))&&!(x.from&&iso<x.from)&&!(x.until&&iso>x.until)}
+function rangeOverlap(p,q){return !((p.until&&q.from&&p.until<q.from)||(q.until&&p.from&&q.until<p.from))}
+function rangeText(x){return x.from||x.until?`${x.from?thShort(x.from):'...'} ถึง ${x.until?thShort(x.until):'...'}`:''}
 function clashes(entry,excludeId){
   const s=toMin(entry.start),e=toMin(entry.end),out=[];
   state.entries.forEach(x=>{ if(x.id===excludeId) return;
-    if(x.days.some(d=>entry.days.includes(d)) && toMin(x.start)<e && s<toMin(x.end)) out.push(x); });
+    if(x.days.some(d=>entry.days.includes(d)) && rangeOverlap(x,entry) && toMin(x.start)<e && s<toMin(x.end)) out.push(x); });
   return out;
 }
 function hasClash(x){return clashes(x,x.id).length>0}
 function hours(x){return (toMin(x.end)-toMin(x.start))/60*x.days.length}
 function codeOf(x){const c=String(x.code||'').trim();return /^(STD|ACT|TUT|SLF|OTH) \d{3}$/.test(c)?'':c}
-function nextCode(cat){
-  const pre={STUDY:'STD',ACT:'ACT',TUTOR:'TUT',SELF:'SLF',OTHER:'OTH'}[cat]||'OTH';
-  let n=101; const used=new Set(state.entries.map(e=>e.code));
-  while(used.has(pre+' '+n)) n++; return pre+' '+n;
-}
 
-/* ---------- dates ---------- */
 function weekDates(off){const t=new Date();const m=new Date(t.getFullYear(),t.getMonth(),t.getDate()-dayIdx(t)+off*7);return DAYS.map((_,i)=>new Date(m.getFullYear(),m.getMonth(),m.getDate()+i))}
 function parseIso(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
 function addDays(iso,n){const d=parseIso(iso);return isoDay(new Date(d.getFullYear(),d.getMonth(),d.getDate()+n))}
-function evEnd(e){return e.endDate&&e.endDate>e.date?e.endDate:e.date}
-/* the piece of an event that falls on one day: multi-day events become a start piece, full days in between, and an end piece */
-function segOn(e,iso){
-  const a=e.date,b=evEnd(e); if(iso<a||iso>b) return null;
-  if(a===b) return e;
-  const base={...e,os:e.start,oe:e.end,multi:true};
-  if(e.allDay) return base;
-  const first=iso===a,last=iso===b;
-  if(!first&&!last) return {...base,allDay:true,mid:true};
-  if(last&&e.end==='00:00') return null;
-  return {...base,start:first?e.start:'00:00',end:last?e.end:'24:00',contL:!first,contR:!last};
-}
-function evsOnOf(list,iso){return (list||[]).map(e=>segOn(e,iso)).filter(Boolean).sort((p,q)=>(q.allDay?1:0)-(p.allDay?1:0)||String(p.start).localeCompare(String(q.start)))}
+function evsOnOf(list,iso){return (list||[]).filter(e=>e.date===iso).sort((p,q)=>(q.allDay?1:0)-(p.allDay?1:0)||String(p.start).localeCompare(String(q.start)))}
 function evsOn(iso){return evsOnOf(state.events,iso)}
-function evTime(e){
-  const s=e.os??e.start, en=e.oe??e.end;
-  if(e.endDate&&e.endDate>e.date) return e.allDay?`${thShort(e.date)} ถึง ${thShort(e.endDate)}`:`${thShort(e.date)} ${s} ถึง ${thShort(e.endDate)} ${en}`;
-  if(!e.allDay&&en==='24:00') return `${s}-24:00`;
-  return e.allDay?'ทั้งวัน':`${s}-${en}`;
-}
+function evTime(e){return e.allDay?'ทั้งวัน':`${e.start}-${e.end}`}
 
-/* ---------- render: week grid ---------- */
-/* items: {kind,id,name,code,cat,start,end,place,clash,priv,busy,contL,contR,tip} ; shared view passes busy items with no details */
 function gridRange(wd,itemsFn){
   let a=7*60,b=21*60;
   wd.forEach((d,di)=>itemsFn(isoDay(d),di).forEach(x=>{
-    const s=toMin(x.start),e=toMin(x.end);
-    if(!x.contL) a=Math.min(a,Math.floor(s/60)*60); else a=Math.min(a,Math.max(0,Math.ceil(e/60)*60-60));
-    if(!x.contR) b=Math.max(b,Math.ceil(e/60)*60); else b=Math.max(b,Math.min(1440,Math.floor(s/60)*60+60));
+    a=Math.min(a,Math.floor(toMin(x.start)/60)*60); b=Math.max(b,Math.ceil(toMin(x.end)/60)*60);
   }));
   return [a,Math.min(b,24*60)];
 }
@@ -714,13 +668,13 @@ function gridHTML(wd,itemsFn,adFn,o){
     lanes.forEach((lane,li)=>{
       h+='<tr>';
       if(li===0) h+=`<th class="day${isT?' today':''}" rowspan="${lanes.length}" scope="row"><span class="mono">${D.en}</span> <span class="dt">${wd[di].getDate()}/${wd[di].getMonth()+1}</span><br>${D.th}`+
-        adFn(iso).map(e=>e.busy?'<span class="ad busy">ไม่ว่างทั้งวัน</span>':`<span class="ad${e.priv?' priv':''}"${o.ro?'':` data-ev="${esc(e.id)}"`} title="${esc(e.title+(e.priv?' (คนอื่นเห็นว่า ไม่ว่าง)':''))}">${esc(e.title)}</span>`).join('')+'</th>';
+        adFn(iso).map(e=>e.busy?'<span class="ad busy">ไม่ว่างทั้งวัน</span>':`<span class="ad"${o.ro?'':` data-ev="${esc(e.id)}"`} title="${esc(e.title)}">${esc(e.title)}</span>`).join('')+'</th>';
       let c=0;
       lane.items.forEach(q=>{
         for(;c<q.s;c++) h+=slot(c);
-        const x=q.x, span=q.e-q.s, tm=x.contL?`…-${x.end}`:x.contR?`${x.start}-…`:`${x.start}-${x.end}`;
+        const x=q.x, span=q.e-q.s, tm=`${x.start}-${x.end}`;
         if(x.busy) h+=`<td class="blk busy" colspan="${span}" title="ไม่ว่าง ${esc(x.tip||tm)}"><span class="n">ไม่ว่าง</span>${span>=3?`<span class="p">${esc(tm)}</span>`:''}</td>`;
-        else h+=`<td class="blk cat-${esc(x.cat)}${x.clash?' clash':''}${x.kind==='event'?' ev':''}${x.priv?' priv':''}" colspan="${span}"${o.ro?'':` tabindex="0" ${x.kind==='event'?'data-ev':'data-id'}="${esc(x.id)}"`} title="${esc((x.code?x.code+' ':'')+x.name+' '+(x.tip||tm)+(x.place?' @ '+x.place:'')+(x.priv?' (คนอื่นเห็นว่า ไม่ว่าง)':''))}">`+
+        else h+=`<td class="blk cat-${esc(x.cat)}${x.clash?' clash':''}${x.kind==='event'?' ev':''}" colspan="${span}"${o.ro?'':` tabindex="0" ${x.kind==='event'?'data-ev':'data-id'}="${esc(x.id)}"`} title="${esc((x.code?x.code+' ':'')+x.name+' '+(x.tip||tm)+(x.place?' @ '+x.place:''))}">`+
            `${x.code?`<span class="c">${esc(x.code)}</span>`:''}<span class="n" style="font-weight:700">${esc(x.name)}</span>${span>=3?`<span class="p">${esc(tm)}${x.place?' · '+esc(x.place):''}</span>`:''}</td>`;
         c=q.e;
       });
@@ -731,10 +685,10 @@ function gridHTML(wd,itemsFn,adFn,o){
   return h+'</tbody>';
 }
 function ownItems(iso,di){
-  return [...state.entries.filter(x=>x.days.includes(di)).map(x=>({kind:'entry',id:x.id,name:x.name,code:codeOf(x),cat:x.cat,start:x.start,end:x.end,place:x.place||'',clash:hasClash(x),priv:!isVis(x)})),
-    ...evsOn(iso).filter(e=>!e.allDay).map(e=>({kind:'event',id:e.id,name:e.title,code:'',cat:e.cat,start:e.start,end:e.end,place:e.place||'',contL:e.contL,contR:e.contR,tip:evTime(e),priv:!isVis(e)}))];
+  return [...state.entries.filter(x=>onDate(x,iso,di)).map(x=>({kind:'entry',id:x.id,name:x.name,code:codeOf(x),cat:x.cat,start:x.start,end:x.end,place:x.place||'',tip:`${x.start}-${x.end}${rangeText(x)?' ('+rangeText(x)+')':''}`,clash:hasClash(x)})),
+    ...evsOn(iso).filter(e=>!e.allDay).map(e=>({kind:'event',id:e.id,name:e.title,code:'',cat:e.cat,start:e.start,end:e.end,place:e.place||''}))];
 }
-function ownAllDay(iso){return evsOn(iso).filter(e=>e.allDay).map(e=>({id:e.id,title:e.title,priv:!isVis(e)}))}
+function ownAllDay(iso){return evsOn(iso).filter(e=>e.allDay).map(e=>({id:e.id,title:e.title}))}
 function renderGrid(){
   const wd=weekDates(weekOff);
   $('wTitle').textContent=weekTitle(wd);
@@ -743,7 +697,6 @@ function renderGrid(){
   $('exnote').hidden=![...state.entries,...state.tasks,...state.events].some(x=>x.example);
   paintSel();
 }
-/* ---------- picking a time range on the grid: drag with a mouse, or tap start then tap end ---------- */
 let gsel=null, mouseAt=0;
 function paintSel(){
   document.querySelectorAll('#grid td.slot.pick').forEach(td=>td.classList.remove('pick'));
@@ -796,13 +749,12 @@ $('wPrev').addEventListener('click',()=>{weekOff--;gsel=null;renderGrid()});
 $('wNext').addEventListener('click',()=>{weekOff++;gsel=null;renderGrid()});
 $('wNow').addEventListener('click',()=>{weekOff=0;renderGrid()});
 
-function renderLegend(){$('legend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><b>[นัด]</b> นัดครั้งเดียว</span><span style="color:var(--warn)"><b>*ชน*</b> เวลาชน</span>'+(state.share&&state.share.on?'<span><span class="sw privsw"></span>คนอื่นเห็นว่า "ไม่ว่าง"</span>':'')}
+function renderLegend(){$('legend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><b>[นัด]</b> นัดครั้งเดียว</span><span style="color:var(--warn)"><b>*ชน*</b> เวลาชน</span>'}
 
-/* ---------- today / due ---------- */
 function renderToday(){
   const d=new Date(), di=dayIdx(d), now=d.getHours()*60+d.getMinutes();
   const tev=evsOn(isoDay(d));
-  const list=[...state.entries.filter(x=>x.days.includes(di)),...tev.filter(e=>!e.allDay).map(e=>({...e,name:e.title}))].sort((p,q)=>toMin(p.start)-toMin(q.start));
+  const list=[...state.entries.filter(x=>onDate(x,isoDay(d),di)),...tev.filter(e=>!e.allDay).map(e=>({...e,name:e.title}))].sort((p,q)=>toMin(p.start)-toMin(q.start));
   let h=`<div class="k">วันนี้</div>`+tev.filter(e=>e.allDay).map(e=>`<div><span class="sw cat-${esc(e.cat)}"></span><b>${esc(e.title)}</b> (ทั้งวัน)</div>`).join('');
   if(!loaded) h+='<span class="empty">กำลังโหลด...</span>';
   else if(!list.length&&!tev.length) h+='<div class="empty">ไม่มีรายการ</div>';
@@ -840,7 +792,6 @@ function dueLabel(t){
 }
 function thShort(due){if(!due)return '-';const [y,m,d]=due.split('-').map(Number);return `${d} ${MS[m-1]} ${String(y+543).slice(-2)}`}
 
-/* ---------- form ---------- */
 (function buildForm(){
   const opts=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   $('e-cat').innerHTML=opts; $('t-cat').innerHTML=opts;
@@ -849,42 +800,32 @@ function thShort(due){if(!due)return '-';const [y,m,d]=due.split('-').map(Number
 function msg(text,ok){const m=$('e-msg');m.hidden=!text;m.innerHTML=text||'';m.classList.toggle('okay',!!ok)}
 function fmode(){return $('e-mode-o').checked?'once':'weekly'}
 const tv=v=>v==='24:00'?'23:59':(v||'');
-function addMin(iso,t,m){const d=parseIso(iso);d.setMinutes(toMin(t)+m);return [isoDay(d),fmt(d.getHours()*60+d.getMinutes())]}
-function spanMin(a,ta,b,tb){return Math.round((parseIso(b)-parseIso(a))/60000)+toMin(tb)-toMin(ta)}
 function durText(m){if(m<=0)return '-';const d=Math.floor(m/1440),h=Math.floor(m%1440/60),n=m%60;return [d?d+' วัน':'',h?h+' ชม.':'',n?n+' นาที':''].filter(Boolean).join(' ')}
 function syncMode(){
   const m=fmode(), ad=$('e-allday').checked;
   document.querySelectorAll('#ef .rw').forEach(el=>el.hidden=m!=='weekly');
   document.querySelectorAll('#ef .ro').forEach(el=>el.hidden=m!=='once');
-  document.querySelectorAll('#ef .tm,#ef .tmq').forEach(el=>el.hidden=m==='once'&&ad);
+  document.querySelectorAll('#ef .tm').forEach(el=>el.hidden=m!=='once'||ad);
+  document.querySelectorAll('#ef .tmq').forEach(el=>el.hidden=m==='once'&&ad);
   updDur();
 }
 function curDur(){
   if(fmode()==='weekly'){const a=$('e-start').value,b=$('e-end').value;return a&&b?toMin(b)-toMin(a):0}
-  const d1=$('e-date').value,d2=$('e-edate').value||d1;
-  if(!d1) return 0;
-  if($('e-allday').checked) return d2>=d1?(spanMin(d1,'00:00',d2,'00:00')+1440):0;
-  const a=$('e-ostart').value,b=$('e-oend').value; return a&&b?spanMin(d1,a,d2,b):0;
+  if($('e-allday').checked) return 1440;
+  const a=$('e-ostart').value,b=$('e-oend').value; return a&&b?toMin(b)-toMin(a):0;
 }
 let keepDur=60;
 function updDur(){const m=curDur();$('e-dur').textContent=m>0?'รวม '+durText(m):'เวลาจบต้องหลังเวลาเริ่ม';$('e-dur').classList.toggle('bad',m<=0);if(m>0)keepDur=m}
 function setDur(m){
   if(fmode()==='weekly'){const a=$('e-start').value||'08:00';$('e-end').value=fmt(Math.min(toMin(a)+m,1439))}
-  else{const d1=$('e-date').value||isoDay(new Date()),a=$('e-ostart').value||'09:00';const [d2,t2]=addMin(d1,a,m);$('e-edate').value=d2;$('e-oend').value=t2;$('e-allday').checked=false;syncMode()}
+  else{const a=$('e-ostart').value||'09:00';$('e-oend').value=fmt(Math.min(toMin(a)+m,1439));$('e-allday').checked=false;syncMode()}
   updDur();clashConfirm=null;
 }
 document.querySelector('#ef .durs').addEventListener('click',ev=>{const b=ev.target.closest('[data-dur]');if(b)setDur(+b.dataset.dur)});
-/* moving the start keeps the length, like a calendar app */
-['e-start','e-date','e-ostart'].forEach(id=>$(id).addEventListener('change',()=>{
-  const k=keepDur;
-  if(id==='e-start'){if($('e-start').value)$('e-end').value=fmt(Math.min(toMin($('e-start').value)+k,1439))}
-  else if($('e-date').value){
-    if($('e-allday').checked){const ed=$('e-edate').value;if(!ed||ed<$('e-date').value)$('e-edate').value=$('e-date').value}
-    else if($('e-ostart').value){const [d2,t2]=addMin($('e-date').value,$('e-ostart').value,k);$('e-edate').value=d2;$('e-oend').value=t2}
-  }
-  updDur();
+[['e-start','e-end'],['e-ostart','e-oend']].forEach(([a,b])=>$(a).addEventListener('change',()=>{
+  if($(a).value)$(b).value=fmt(Math.min(toMin($(a).value)+keepDur,1439)); updDur();
 }));
-['e-end','e-edate','e-oend'].forEach(id=>$(id).addEventListener('change',updDur));
+['e-end','e-oend'].forEach(id=>$(id).addEventListener('change',updDur));
 ['e-mode-w','e-mode-o','e-allday'].forEach(id=>$(id).addEventListener('change',syncMode));
 function defVis(){return (state.share&&state.share.def)||'busy'}
 function isVis(x){return (x.vis||defVis())==='show'}
@@ -893,7 +834,7 @@ function resetForm(o){
   o=o||{}; editing=null;clashConfirm=null;$('ef').reset();
   const st=tv(o.start||'08:00'), en=tv(o.end||'09:00');
   $('e-start').value=st;$('e-end').value=en;$('e-ostart').value=st;$('e-oend').value=en;
-  $('e-date').value=o.date||calSel||isoDay(new Date()); $('e-edate').value=o.edate||$('e-date').value;
+  $('e-date').value=o.date||calSel||isoDay(new Date()); $('e-from').value='';$('e-until').value='';
   (o.mode==='once'?$('e-mode-o'):$('e-mode-w')).checked=true; setVisRadio(defVis());
   $('formTitle').textContent='เพิ่มรายการ';$('e-del').hidden=true;msg('');syncMode();
 }
@@ -902,28 +843,23 @@ function openEdit(id){
   resetForm({mode:'weekly',start:x.start,end:x.end}); editing={kind:'entry',id};
   $('e-code').value=codeOf(x);$('e-name').value=x.name||'';$('e-cat').value=x.cat||'OTHER';
   document.querySelectorAll('#e-days input').forEach(i=>i.checked=x.days.includes(+i.value));
+  $('e-from').value=x.from||'';$('e-until').value=x.until||'';
   $('e-place').value=x.place||'';$('e-note').value=x.note||'';setVisRadio(isVis(x)?'show':'busy');
   $('formTitle').textContent='แก้ไข '+(x.name||'');$('e-del').hidden=false;updDur();
   show('add');
 }
 function openEv(id){
   const e=state.events.find(x=>x.id===id); if(!e) return;
-  const mid=e.end==='24:00';
-  resetForm({mode:'once',date:e.date,edate:mid?addDays(e.date,1):evEnd(e),start:e.start||'09:00',end:mid?'00:00':(e.end||'10:00')}); editing={kind:'event',id};
+  resetForm({mode:'once',date:e.date,start:e.start||'09:00',end:e.end||'10:00'}); editing={kind:'event',id};
   $('e-name').value=e.title||'';$('e-cat').value=e.cat||'OTHER';$('e-allday').checked=!!e.allDay;$('e-place').value=e.place||'';$('e-note').value=e.note||'';setVisRadio(isVis(e)?'show':'busy');
   $('formTitle').textContent='แก้ไขนัด '+(e.title||'');$('e-del').hidden=false;syncMode();
   show('add');
 }
 function onceClashes(e,exId){
   if(e.allDay) return [];
-  const out=[], b=evEnd(e);
-  for(let iso=e.date,k=0;iso<=b&&k<62;iso=addDays(iso,1),k++){
-    const g=segOn(e,iso); if(!g||g.allDay) continue;
-    const s=toMin(g.start),en=toMin(g.end),di=dayIdx(parseIso(iso));
-    state.entries.filter(x=>x.id!==exId&&x.days.includes(di)&&toMin(x.start)<en&&s<toMin(x.end)).forEach(x=>out.push(`${esc(x.name)} (${DAYS[di].s} ${esc(x.start)}-${esc(x.end)})`));
-    evsOn(iso).filter(x=>x.id!==exId&&!x.allDay&&toMin(x.start)<en&&s<toMin(x.end)).forEach(x=>out.push(`นัด ${esc(x.title)} (${esc(evTime(x))})`));
-  }
-  return [...new Set(out)];
+  const iso=e.date, s=toMin(e.start), en=toMin(e.end), di=dayIdx(parseIso(iso));
+  return [...state.entries.filter(x=>x.id!==exId&&onDate(x,iso,di)&&toMin(x.start)<en&&s<toMin(x.end)).map(x=>`${esc(x.name)} (${esc(x.start)}-${esc(x.end)})`),
+          ...evsOn(iso).filter(x=>x.id!==exId&&!x.allDay&&toMin(x.start)<en&&s<toMin(x.end)).map(x=>`นัด ${esc(x.title)} (${esc(evTime(x))})`)];
 }
 let delArm=false;
 $('e-del').addEventListener('click',()=>{
@@ -942,48 +878,45 @@ $('ef').addEventListener('submit',ev=>{
   if(!name) return msg('ใส่ชื่อรายการก่อน');
   if(m==='weekly'){
     const days=[...document.querySelectorAll('#e-days input:checked')].map(i=>+i.value);
-    const entry={id,code:$('e-code').value.trim(),name,cat,days,start,end,place,note,vis};
+    const from=$('e-from').value, until=$('e-until').value;
+    const entry={id,code:$('e-code').value.trim(),name,cat,days,start,end,place,note,vis,...(from?{from}:{}),...(until?{until}:{})};
     if(!days.length) return msg('เลือกอย่างน้อย 1 วัน');
+    if(from&&until&&until<from) return msg('วันสิ้นสุดต้องไม่ก่อนวันเริ่ม');
     if(!start||!end) return msg('ใส่เวลาเริ่มและเวลาจบ');
     if(toMin(end)<=toMin(start)) return msg('เวลาจบต้องหลังเวลาเริ่ม');
-    const cl=clashes(entry,exId), sig=JSON.stringify([m,days,start,end]);
+    const cl=clashes(entry,exId), sig=JSON.stringify([m,days,start,end,from,until]);
     if(cl.length&&clashConfirm!==sig){clashConfirm=sig;return msg('<b>เวลาชน</b> กับ '+cl.map(x=>`${esc(x.name)} (${x.days.map(d=>DAYS[d].s).join(' ')} ${esc(x.start)}-${esc(x.end)})`).join(', ')+'<br>กดบันทึกอีกครั้งถ้าจะลงซ้อนกัน')}
     if(editing&&editing.kind==='event') state.events=state.events.filter(e=>e.id!==exId);
     const old=state.entries.find(e=>e.id===id);
-    if(old) Object.assign(old,entry,{example:false}); else state.entries.push(entry);
+    if(old){delete old.from;delete old.until;Object.assign(old,entry,{example:false})} else state.entries.push(entry);
   } else {
-    const date=$('e-date').value, edate=$('e-edate').value||date, allDay=$('e-allday').checked, os=$('e-ostart').value, oe=$('e-oend').value;
-    if(!date) return msg('เลือกวันเริ่มก่อน');
-    if(edate<date) return msg('วันจบต้องไม่ก่อนวันเริ่ม');
+    const date=$('e-date').value, allDay=$('e-allday').checked, os=$('e-ostart').value, oe=$('e-oend').value;
+    if(!date) return msg('เลือกวันที่ก่อน');
     if(!allDay){
       if(!os||!oe) return msg('ใส่เวลาเริ่มและเวลาจบ');
-      if(spanMin(date,os,edate,oe)<=0) return msg(edate===date?'เวลาจบต้องหลังเวลาเริ่ม ถ้าจบหลังเที่ยงคืนให้เลื่อนวันจบเป็นวันถัดไป':'เวลาจบต้องหลังเวลาเริ่ม');
+      if(toMin(oe)<=toMin(os)) return msg('เวลาจบต้องหลังเวลาเริ่ม');
     }
     const e={id,title:name,date,allDay,start:allDay?'':os,end:allDay?'':oe,cat,place,note,vis};
-    if(edate>date&&!(edate===addDays(date,1)&&!allDay&&oe==='00:00')) e.endDate=edate;
-    else if(!allDay&&edate>date&&oe==='00:00') e.end='24:00';
-    if(spanMin(date,os||'00:00',edate,oe||'00:00')>62*1440) return msg('นัดยาวได้ไม่เกิน 62 วัน');
-    const cl=onceClashes(e,exId), sig=JSON.stringify([m,date,edate,os,oe,allDay]);
+    const cl=onceClashes(e,exId), sig=JSON.stringify([m,date,os,oe,allDay]);
     if(cl.length&&clashConfirm!==sig){clashConfirm=sig;return msg('<b>เวลาชน</b> กับ '+cl.join(', ')+'<br>กดบันทึกอีกครั้งถ้าจะลงซ้อนกัน')}
     if(editing&&editing.kind==='entry') state.entries=state.entries.filter(x=>x.id!==exId);
     const old=state.events.find(x=>x.id===id);
-    if(old){delete old.endDate;Object.assign(old,e,{example:false})} else state.events.push(e);
+    if(old) Object.assign(old,e,{example:false}); else state.events.push(e);
     calSel=date;
   }
   resetForm({mode:m,date:$('e-date').value}); commit('บันทึก '+name);
   msg(`บันทึก ${esc(name)} แล้ว`,true);
 });
 
-/* ---------- list ---------- */
 function renderList(){
   const L=[...state.entries].sort((p,q)=>Math.min(...p.days)-Math.min(...q.days)||toMin(p.start)-toMin(q.start));
   let h='<thead><tr><th>#</th><th>ชื่อ</th><th>ประเภท</th><th>วัน</th><th>เวลา</th><th>สถานที่</th><th>ชม./สัปดาห์</th><th>คนอื่นเห็น</th><th></th></tr></thead><tbody>';
   if(!L.length) h+=`<tr><td colspan="9" class="ctr empty">${loaded?'ยังไม่มีรายการ':'กำลังโหลด...'}</td></tr>`;
-  L.forEach((x,i)=>{h+=`<tr><td class="ctr">${i+1}</td><td>${codeOf(x)?esc(codeOf(x))+' ':''}${esc(x.name)}${x.example?' <span class="ex">ตัวอย่าง</span>':''}${hasClash(x)?' <span class="st-over">ชน</span>':''}${x.note?`<br><span style="color:var(--muted)">${esc(x.note)}</span>`:''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(x.cat)}"></span>${esc(CATS[x.cat]||'')}</td><td style="white-space:nowrap">${x.days.slice().sort().map(d=>DAYS[d].s).join(' ')}</td><td class="mono ctr" style="white-space:nowrap">${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.place||'-')}</td><td class="num">${hours(x).toFixed(1)}</td><td class="ctr" style="white-space:nowrap"><label><input type="checkbox" data-vis="entry:${esc(x.id)}" ${isVis(x)?'checked':''}> เห็น</label></td><td class="ctr"><button class="btn sm" type="button" data-edit="${esc(x.id)}">แก้ไข</button></td></tr>`});
+  L.forEach((x,i)=>{h+=`<tr><td class="ctr">${i+1}</td><td>${codeOf(x)?esc(codeOf(x))+' ':''}${esc(x.name)}${x.example?' <span class="ex">ตัวอย่าง</span>':''}${hasClash(x)?' <span class="st-over">ชน</span>':''}${x.note?`<br><span style="color:var(--muted)">${esc(x.note)}</span>`:''}${rangeText(x)?`<br><span style="color:var(--muted)">${esc(rangeText(x))}</span>`:''}${x.until&&x.until<isoDay(new Date())?' <span class="ex">หมดช่วงแล้ว</span>':''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(x.cat)}"></span>${esc(CATS[x.cat]||'')}</td><td style="white-space:nowrap">${x.days.slice().sort().map(d=>DAYS[d].s).join(' ')}</td><td class="mono ctr" style="white-space:nowrap">${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.place||'-')}</td><td class="num">${hours(x).toFixed(1)}</td><td class="ctr" style="white-space:nowrap"><label><input type="checkbox" data-vis="entry:${esc(x.id)}" ${isVis(x)?'checked':''}> เห็น</label></td><td class="ctr"><button class="btn sm" type="button" data-edit="${esc(x.id)}">แก้ไข</button></td></tr>`});
   const tot=L.reduce((s,x)=>s+hours(x),0);
   if(L.length) h+=`<tr><td colspan="6" class="num"><b>รวม</b></td><td class="num"><b>${tot.toFixed(1)}</b></td><td></td><td></td></tr>`;
   $('ltab').innerHTML=h+'</tbody>';
-  const tIso=isoDay(new Date()), up=state.events.filter(e=>evEnd(e)>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start)));
+  const tIso=isoDay(new Date()), up=state.events.filter(e=>e.date>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start)));
   let v='<thead><tr><th>วันที่</th><th>เวลา</th><th>ชื่อ</th><th>ประเภท</th><th>สถานที่</th><th>คนอื่นเห็น</th><th></th></tr></thead><tbody>';
   if(!up.length) v+=`<tr><td colspan="7" class="ctr empty">${loaded?'ไม่มีนัดที่จะถึง':'กำลังโหลด...'}</td></tr>`;
   up.forEach(e=>{v+=`<tr><td style="white-space:nowrap">${DAYS[dayIdx(parseIso(e.date))].s} ${thShort(e.date)}</td><td class="ctr" style="white-space:nowrap">${esc(evTime(e))}</td><td>${esc(e.title)}${e.example?' <span class="ex">ตัวอย่าง</span>':''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(e.cat)}"></span>${esc(CATS[e.cat]||'')}</td><td>${esc(e.place||'-')}</td><td class="ctr" style="white-space:nowrap"><label><input type="checkbox" data-vis="event:${esc(e.id)}" ${isVis(e)?'checked':''}> เห็น</label></td><td class="ctr"><button class="btn sm" type="button" data-oev="${esc(e.id)}">แก้ไข</button></td></tr>`});
@@ -994,7 +927,6 @@ function onVisToggle(ev){const c=ev.target.closest('[data-vis]');if(!c)return;co
 $('ltab').addEventListener('change',onVisToggle);$('vtab').addEventListener('change',onVisToggle);
 $('vtab').addEventListener('click',ev=>{const b=ev.target.closest('[data-oev]');if(b)openEv(b.dataset.oev)});
 
-/* ---------- tasks ---------- */
 $('t-due').value=isoDay(new Date(Date.now()+86400000*3));
 $('tf').addEventListener('submit',ev=>{
   ev.preventDefault(); const title=$('t-title').value.trim(), due=$('t-due').value; if(!title||!due) return;
@@ -1005,7 +937,7 @@ function renderTasks(){
   const T=[...state.tasks].sort((p,q)=>(p.done-q.done)||String(p.due).localeCompare(String(q.due)));
   let h='<thead><tr><th>เสร็จ</th><th>งาน</th><th>ประเภท</th><th>กำหนดส่ง</th><th>สถานะ</th><th>ลบ</th></tr></thead><tbody>';
   if(!T.length) h+=`<tr><td colspan="6" class="ctr empty">${loaded?'ไม่มีงานค้าง':'กำลังโหลด...'}</td></tr>`;
-  T.forEach(t=>{const fresh=!t.done&&t.created&&Date.now()-t.created<86400000;
+  T.forEach(t=>{
     h+=`<tr class="${t.done?'done':''}"><td class="ctr keep"><input type="checkbox" id="tk-${esc(t.id)}" data-tog="${esc(t.id)}" ${t.done?'checked':''} aria-label="ทำเครื่องหมายว่าเสร็จ"></td><td>${esc(t.title)}${t.example?' <span class="ex">ตัวอย่าง</span>':''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(t.cat)}"></span>${esc(CATS[t.cat]||'')}</td><td class="ctr" style="white-space:nowrap">${thShort(t.due)}</td><td class="keep" style="white-space:nowrap">${dueLabel(t)}</td><td class="ctr keep"><button class="btn sm danger" type="button" data-rm="${esc(t.id)}">ลบ</button></td></tr>`});
   $('ttab').innerHTML=h+'</tbody>';
 }
@@ -1014,7 +946,6 @@ $('ttab').addEventListener('click',ev=>{const b=ev.target.closest('[data-rm]');i
 $('clearDone').addEventListener('click',()=>{state.tasks=state.tasks.filter(t=>!t.done);commit('ลบงานที่เสร็จ')});
 $('clearEx').addEventListener('click',()=>{state.entries=state.entries.filter(x=>!x.example);state.tasks=state.tasks.filter(x=>!x.example);state.events=state.events.filter(x=>!x.example);commit('ลบตัวอย่าง')});
 
-/* ---------- summary ---------- */
 function renderSum(){
   const by={};Object.keys(CATS).forEach(k=>by[k]=0);
   state.entries.forEach(x=>{by[x.cat in by?x.cat:'OTHER']+=hours(x)});
@@ -1030,7 +961,6 @@ function renderSum(){
   $('dtab').innerHTML=d+'</tbody>';
 }
 
-/* ---------- calendar ---------- */
 function renderCal(){
   $('cTitle').textContent=MONTHS[calM]+' '+(calY+543);
   const first=new Date(calY,calM,1), st=new Date(calY,calM,1-dayIdx(first)), tIso=isoDay(new Date());
@@ -1042,7 +972,7 @@ function renderCal(){
     h+='<tr>';
     for(let i=0;i<7;i++){
       const d=new Date(st.getFullYear(),st.getMonth(),st.getDate()+w*7+i), iso=isoDay(d);
-      const its=[...evsOn(iso).map(e=>`<span class="it cat-${esc(e.cat)}" title="${esc(evTime(e)+' '+e.title)}">${e.allDay||e.contL?'':esc(e.start)+' '}${esc(e.title)}</span>`),
+      const its=[...evsOn(iso).map(e=>`<span class="it cat-${esc(e.cat)}" title="${esc(evTime(e)+' '+e.title)}">${e.allDay?'':esc(e.start)+' '}${esc(e.title)}</span>`),
                  ...state.tasks.filter(t=>t.due===iso&&!t.done).map(t=>`<span class="it due" title="ส่ง ${esc(t.title)}">ส่ง ${esc(t.title)}</span>`)];
       const cls=[d.getMonth()!==calM?'other':'',iso===tIso?'today':'',iso===calSel?'sel':''].filter(Boolean).join(' ');
       h+=`<td class="${cls}" data-date="${iso}" tabindex="0"><span class="dn">${d.getDate()}</span>${its.slice(0,3).join('')}${its.length>3?`<span class="more">อีก ${its.length-3} รายการ</span>`:''}</td>`;
@@ -1054,7 +984,7 @@ function renderCal(){
 }
 function renderDay(){
   const d=parseIso(calSel), di=dayIdx(d);
-  const reg=state.entries.filter(x=>x.days.includes(di)).sort((p,q)=>toMin(p.start)-toMin(q.start));
+  const reg=state.entries.filter(x=>onDate(x,calSel,di)).sort((p,q)=>toMin(p.start)-toMin(q.start));
   const evs=evsOn(calSel), due=state.tasks.filter(t=>t.due===calSel);
   let h=`<div class="k">${esc(thDate(d))} <button class="btn sm" type="button" data-addday="1">เพิ่มนัดวันนี้</button></div>`;
   h+='<h3 style="margin-top:6px">นัด</h3>'+(evs.length?'<table class="t"><tbody>'+evs.map(e=>`<tr><td class="mono" style="white-space:nowrap">${esc(evTime(e))}</td><td><span class="sw cat-${esc(e.cat)}"></span>${esc(e.title)}${e.place?` <span style="color:var(--muted)">@ ${esc(e.place)}</span>`:''}${e.example?' <span class="ex">ตัวอย่าง</span>':''}</td><td class="ctr"><button class="btn sm" type="button" data-oev="${esc(e.id)}">แก้ไข</button></td></tr>`).join('')+'</tbody></table>':'<div class="empty">ไม่มีนัด</div>');
@@ -1070,7 +1000,6 @@ $('cPrev').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--}render
 $('cNext').addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++}renderCal()});
 $('cNow').addEventListener('click',()=>{const t=new Date();calY=t.getFullYear();calM=t.getMonth();calSel=isoDay(t);renderCal()});
 
-/* ---------- skins ---------- */
 const SKEY='lifereg.skin';
 function applySkin(k){
   if(!['pink','blue','green','gray','dark'].includes(k)) k='pink';
@@ -1081,10 +1010,9 @@ document.querySelectorAll('input[data-skin]').forEach(r=>r.addEventListener('cha
 function setMsg(t){const m=$('set-msg');m.hidden=false;m.className='alert okay';m.textContent=t}
 $('setClearEx').addEventListener('click',()=>{const n=[...state.entries,...state.tasks,...state.events].filter(x=>x.example).length;state.entries=state.entries.filter(x=>!x.example);state.tasks=state.tasks.filter(x=>!x.example);state.events=state.events.filter(x=>!x.example);commit('ลบตัวอย่าง');setMsg(`ลบรายการตัวอย่าง ${n} รายการแล้ว`)});
 $('setClearDone').addEventListener('click',()=>{const n=state.tasks.filter(t=>t.done).length;state.tasks=state.tasks.filter(t=>!t.done);commit('ลบงานที่เสร็จ');setMsg(`ลบงานที่เสร็จแล้ว ${n} งาน`)});
-$('setClearPast').addEventListener('click',()=>{const t=isoDay(new Date()),n=state.events.filter(e=>evEnd(e)<t).length;state.events=state.events.filter(e=>evEnd(e)>=t);commit('ลบนัดที่ผ่านไป');setMsg(`ลบนัดที่ผ่านไปแล้ว ${n} รายการ`)});
+$('setClearPast').addEventListener('click',()=>{const t=isoDay(new Date()),n=state.events.filter(e=>e.date<t).length;state.events=state.events.filter(e=>e.date>=t);commit('ลบนัดที่ผ่านไป');setMsg(`ลบนัดที่ผ่านไปแล้ว ${n} รายการ`)});
 try{applySkin(localStorage.getItem(SKEY)||'pink')}catch(e){applySkin('pink')}
 
-/* ---------- backup UI ---------- */
 function bkMsg(t,ok){const m=$('bk-msg');m.hidden=!t;m.className='alert'+(ok?' okay':'');m.textContent=t||''}
 function counts(d){return `ประจำ ${(d.entries||[]).length} · นัด ${(d.events||[]).length} · งาน ${(d.tasks||[]).length}`}
 function stamp(at){const d=new Date(at);return `${d.getDate()} ${MS[d.getMonth()]} ${d.getFullYear()+543} ${fmt(d.getHours()*60+d.getMinutes())} น.`}
@@ -1154,16 +1082,14 @@ $('ttlf').addEventListener('submit',ev=>{
 });
 function renderAll(){applyTitle();renderLegend();renderShare();renderGrid();renderToday();renderList();renderTasks();renderSum();renderCal()}
 renderLegend(); resetForm(); renderAll(); renderUndo();
-/* ---------- login (Firebase Auth) ---------- */
 const AUTH_ERR={'auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/user-not-found':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/invalid-email':'รูปแบบอีเมลไม่ถูกต้อง','auth/too-many-requests':'ลองผิดหลายครั้ง รอสักครู่แล้วลองใหม่','auth/network-request-failed':'ไม่มีอินเทอร์เน็ต เข้าสู่ระบบครั้งแรกต้องออนไลน์','auth/operation-not-allowed':'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยอีเมลใน Firebase','auth/user-disabled':'บัญชีนี้ถูกปิดใช้งาน','auth/missing-password':'ใส่รหัสผ่านก่อน','auth/weak-password':'รหัสผ่านใหม่สั้นเกินไป','auth/requires-recent-login':'เข้าสู่ระบบใหม่อีกครั้งแล้วลองเปลี่ยนรหัสผ่าน'};
 const authMsg=e=>AUTH_ERR[e&&e.code]||('เกิดข้อผิดพลาด ('+((e&&e.code)||'unknown')+')');
-/* ---------- shared view (no login) ---------- */
 const SHARE_ID=(new URLSearchParams(location.search).get('s')||'').replace(/[^A-Za-z0-9]/g,'').slice(0,40);
 let svData=null, svOff=0;
 function svItems(iso,di){
   if(!svData) return [];
-  const E=(svData.entries||[]).filter(x=>Array.isArray(x.days)&&x.days.includes(di)&&x.start&&x.end).map((x,i)=>x.busy?{busy:true,start:x.start,end:x.end}:{kind:'entry',id:'e'+i,name:x.name,code:x.code||'',cat:x.cat,start:x.start,end:x.end,place:x.place||''});
-  const V=evsOnOf(svData.events,iso).filter(e=>!e.allDay).map((e,i)=>e.busy?{busy:true,start:e.start,end:e.end,contL:e.contL,contR:e.contR,tip:evTime(e)}:{kind:'event',id:'v'+i,name:e.title,cat:e.cat,start:e.start,end:e.end,place:e.place||'',contL:e.contL,contR:e.contR,tip:evTime(e)});
+  const E=(svData.entries||[]).filter(x=>Array.isArray(x.days)&&onDate(x,iso,di)&&x.start&&x.end).map((x,i)=>x.busy?{busy:true,start:x.start,end:x.end}:{kind:'entry',id:'e'+i,name:x.name,code:x.code||'',cat:x.cat,start:x.start,end:x.end,place:x.place||''});
+  const V=evsOnOf(svData.events,iso).filter(e=>!e.allDay).map((e,i)=>e.busy?{busy:true,start:e.start,end:e.end}:{kind:'event',id:'v'+i,name:e.title,cat:e.cat,start:e.start,end:e.end,place:e.place||''});
   return [...E,...V];
 }
 function svAllDay(iso){return svData?evsOnOf(svData.events,iso).filter(e=>e.allDay).map(e=>e.busy?{busy:true}:{title:e.title}):[]}
@@ -1173,7 +1099,7 @@ function renderViewer(){
   $('svWeek').textContent=weekTitle(wd);
   $('svGrid').innerHTML=gridHTML(wd,svItems,svAllDay,{ro:true});
   $('svLegend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><span class="sw busysw"></span>ไม่ว่าง</span><span><b>[นัด]</b> นัดครั้งเดียว</span>';
-  const tIso=isoDay(new Date()), up=(svData&&svData.events||[]).filter(e=>evEnd(e)>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start))).slice(0,30);
+  const tIso=isoDay(new Date()), up=(svData&&svData.events||[]).filter(e=>e.date>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start))).slice(0,30);
   let v='<thead><tr><th>วันที่</th><th>เวลา</th><th>รายการ</th><th>สถานที่</th></tr></thead><tbody>';
   if(!up.length) v+='<tr><td colspan="4" class="ctr empty">ไม่มีนัดที่จะถึง</td></tr>';
   up.forEach(e=>{v+=`<tr><td style="white-space:nowrap">${DAYS[dayIdx(parseIso(e.date))].s} ${thShort(e.date)}</td><td class="ctr" style="white-space:nowrap">${esc(evTime(e))}</td>${e.busy?'<td><span class="sw busysw"></span>ไม่ว่าง</td><td>-</td>':`<td><span class="sw cat-${esc(e.cat)}"></span>${esc(e.title)}</td><td>${esc(e.place||'-')}</td>`}</tr>`});
