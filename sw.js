@@ -1,6 +1,6 @@
 // Weekly Planner service worker: keeps the app usable offline.
 // Bump VERSION whenever you change any file, so iPads pick up the update.
-const VERSION = 'lifetable-v9';
+const VERSION = 'lifetable-v10';
 const SHELL = [
   './',
   './index.html',

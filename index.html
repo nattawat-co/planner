@@ -80,7 +80,7 @@ table.grid thead th{background:var(--maroon);color:#FFFFFF;font-weight:700;heigh
 table.grid th.day{background:var(--pink2);color:var(--ink);width:62px;min-width:62px;line-height:1.25;padding:2px;font-weight:700}
 table.grid th.day.today{background:var(--hl)}
 table.grid td.slot{height:34px;width:26px;min-width:26px;cursor:pointer}
-table.grid td.slot:hover{background:var(--hl)}
+table.grid td.slot:not(.ro):hover{background:var(--hl)}
 table.grid td.blk{cursor:pointer;padding:1px 2px;line-height:1.25;overflow:hidden;vertical-align:middle;text-align:center}
 table.grid td.blk:hover{color:var(--hover)}
 .blk .c{font-weight:700;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -181,8 +181,32 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
   table.t td,table.t th{padding:5px 6px}
   .marquee{padding:6px 10px;font-size:12px;align-items:center}
 }
+
+/* time range picking + shared view */
+.dt2{display:flex;flex-wrap:wrap;gap:4px}
+input[type=time]{max-width:100%}
+.durs{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.durv{font-weight:700;color:var(--title);margin-right:6px}
+.durv.bad{color:var(--warn)}
+table.grid td.slot.pick,table.grid td.slot.pick:hover{background:var(--maroon)!important;opacity:.55}
+.placebar{border:1px solid var(--warn);background:var(--hl);color:#000;padding:4px 6px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:11px}
+:root{--busy:#D0D0D0;--busyline:rgba(0,0,0,.32);--busyink:#333333}
+:root[data-skin="dark"]{--busy:#3A3A3A;--busyline:rgba(255,255,255,.22);--busyink:#CCCCCC}
+table.grid td.blk.busy,.ad.busy,.busysw{background-color:var(--busy)!important;background-image:repeating-linear-gradient(135deg,transparent 0 5px,var(--busyline) 5px 6.5px)!important;color:var(--busyink)!important;cursor:default}
+table.grid td.blk.busy:hover{color:var(--busyink)}
+table.grid th.day .ad.busy{text-decoration:none;cursor:default;padding:0 2px}
+table.grid th.day .ad.busy::before{content:""}
+.privsw{background-color:var(--paper)!important;background-image:repeating-linear-gradient(135deg,transparent 0 3px,var(--busyline) 3px 4px)!important;border-color:var(--busyink)}
+table.grid td.blk.priv{box-shadow:inset 0 0 0 1px var(--busyink);background-image:repeating-linear-gradient(135deg,transparent 0 9px,var(--busyline) 9px 10px)!important}
+table.grid td.slot.ro{cursor:default}
+table.grid td.slot.ro:hover{background:var(--paper)}
+.privtag{color:var(--muted);font-size:10px}
+#sv{display:none}
+.viewing #lock,.viewing #app{display:none!important}
+.viewing #sv{display:block}
+#svUrl{width:100%;max-width:420px;font-size:11px}
 </style>
-<script>try{var k=localStorage.getItem('lifereg.skin');if(k&&k!=='pink')document.documentElement.dataset.skin=k}catch(e){}</script>
+<script>if(/[?&]s=[A-Za-z0-9]/.test(location.search))document.documentElement.classList.add('viewing');try{var k=localStorage.getItem('lifereg.skin');if(k&&k!=='pink')document.documentElement.dataset.skin=k}catch(e){}</script>
 </head>
 <body>
 
@@ -248,6 +272,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
           <div class="box" id="duebox"><span class="empty">กำลังโหลดงาน...</span></div>
         </div>
         <div class="legend" id="legend"></div>
+        <div class="placebar" id="selbar" hidden></div>
         <div class="scroll"><table class="grid" id="grid"></table></div>
         <div id="weekempty" class="empty" hidden>ยังไม่มีรายการ คลิกช่องว่างในตารางเพื่อเพิ่ม</div>
         <div id="exnote" hidden class="box">ตอนนี้มีรายการ<span class="ex">ตัวอย่าง</span>อยู่ <button class="btn sm danger" id="clearEx" type="button">ลบตัวอย่าง</button></div>
@@ -267,16 +292,24 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
             <div><select id="e-cat"></select></div>
             <span class="l rw">วัน *</span>
             <div class="days rw" id="e-days"></div>
-            <label class="l ro" for="e-date">วันที่ *</label>
-            <div class="ro"><input type="date" id="e-date"></div>
-            <label class="l" for="e-start">เวลา *</label>
-            <div><label class="ro"><input type="checkbox" id="e-allday"> ทั้งวัน </label><span id="e-times"><select id="e-start"></select> ถึง <select id="e-end" aria-label="เวลาสิ้นสุด"></select></span></div>
+            <label class="l rw" for="e-start">เวลา *</label>
+            <div class="rw"><input type="time" id="e-start" step="60" aria-label="เวลาเริ่ม"> ถึง <input type="time" id="e-end" step="60" aria-label="เวลาจบ"></div>
+            <span class="l ro">ทั้งวัน</span>
+            <div class="ro"><label><input type="checkbox" id="e-allday"> ทั้งวัน (ไม่ระบุเวลา)</label></div>
+            <label class="l ro" for="e-date">เริ่ม *</label>
+            <div class="ro dt2"><input type="date" id="e-date" aria-label="วันเริ่ม"><input type="time" id="e-ostart" class="tm" step="60" aria-label="เวลาเริ่ม"></div>
+            <label class="l ro" for="e-edate">จบ *</label>
+            <div class="ro dt2"><input type="date" id="e-edate" aria-label="วันจบ"><input type="time" id="e-oend" class="tm" step="60" aria-label="เวลาจบ"></div>
+            <span class="l">ระยะเวลา</span>
+            <div class="durs"><span id="e-dur" class="durv">-</span><span class="tmq"><button class="btn sm" type="button" data-dur="30">30 นาที</button><button class="btn sm" type="button" data-dur="60">1 ชม.</button><button class="btn sm" type="button" data-dur="90">1.5 ชม.</button><button class="btn sm" type="button" data-dur="120">2 ชม.</button><button class="btn sm" type="button" data-dur="180">3 ชม.</button></span></div>
             <label class="l" for="e-place">สถานที่</label>
             <div><input type="text" id="e-place" maxlength="40" placeholder="เช่น ห้อง 512, ออนไลน์"></div>
             <label class="l rw" for="e-code">รหัส</label>
             <div class="rw"><input type="text" id="e-code" maxlength="12" placeholder="ไม่ใส่ก็ได้" style="max-width:180px"></div>
             <label class="l" for="e-note">หมายเหตุ</label>
             <div><input type="text" id="e-note" maxlength="80"></div>
+            <span class="l">คนที่ดูตารางแชร์</span>
+            <div class="days"><label><input type="radio" name="e-vis" id="e-vis-s" value="show"> เห็นรายละเอียด</label><label><input type="radio" name="e-vis" id="e-vis-b" value="busy"> เห็นแค่ว่า "ไม่ว่าง"</label></div>
             <div class="alert" id="e-msg" hidden></div>
             <div class="btns">
               <button class="btn" type="submit" id="e-save">บันทึก</button>
@@ -285,7 +318,7 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
             </div>
           </div>
         </form>
-        <div class="box" style="font-size:11px">"ทุกสัปดาห์" ใช้กับตารางประจำ เช่น เรียน ชมรม ส่วน "ครั้งเดียว" ใช้กับนัดที่มีวันที่แน่นอน ถ้าเวลาชนกับรายการอื่นจะมีคำเตือนก่อนบันทึก</div>
+        <div class="box" style="font-size:11px">"ทุกสัปดาห์" ใช้กับตารางประจำ เช่น เรียน ชมรม ส่วน "ครั้งเดียว" ใช้กับนัดที่มีวันที่แน่นอน นัดลากข้ามวันได้ เช่น ค่าย 3 วัน หรือเริ่ม 22:00 จบตีสองของอีกวัน ถ้าเวลาชนกับรายการอื่นจะมีคำเตือนก่อนบันทึก<br>ในตารางสัปดาห์ ลากเมาส์คร่อมช่องเพื่อเลือกช่วงเวลาได้เลย บนมือถือให้แตะช่องเวลาเริ่ม แล้วแตะช่องเวลาจบ</div>
       </section>
 
       <!-- LIST -->
@@ -342,6 +375,20 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
           </tbody>
         </table></div>
         <div class="empty" style="font-size:11px">สีที่เลือกจะจำไว้ในเบราว์เซอร์นี้</div>
+        <h3>แชร์ตาราง</h3>
+        <div style="font-size:11px">สถานะ: <span id="shState">-</span> <button class="btn sm" type="button" id="shToggle">เปิดการแชร์</button></div>
+        <div id="shLinkRow" hidden style="font-size:11px;display:grid;gap:4px">
+          <div>ส่งลิงก์นี้ให้คนที่อยากให้ดูตาราง ไม่ต้องมีบัญชีก็เปิดดูได้</div>
+          <input type="text" id="shUrl" readonly onclick="this.select()" style="max-width:420px">
+          <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="shCopy">คัดลอกลิงก์</button><button class="btn sm" type="button" id="shOpen">ดูแบบที่คนอื่นเห็น</button><button class="btn sm" type="button" id="shNew">เปลี่ยนลิงก์ใหม่</button></div>
+        </div>
+        <div style="font-size:11px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-top:4px">
+          <label>รายการที่ยังไม่ได้ตั้งเอง: <select id="shDef"><option value="busy">ขึ้นว่า "ไม่ว่าง"</option><option value="show">เห็นรายละเอียด</option></select></label>
+          <span>ตั้งทุกรายการเป็น <button class="btn sm" type="button" data-shall="show">เห็นทั้งหมด</button> <button class="btn sm" type="button" data-shall="busy">ไม่ว่างทั้งหมด</button></span>
+        </div>
+        <div style="font-size:11px" id="shCount"></div>
+        <div class="alert" id="sh-msg" hidden></div>
+        <div class="empty" style="font-size:11px">คนที่มีลิงก์จะเห็นตารางประจำกับนัด รายการที่ตั้งเป็น "ไม่ว่าง" จะเห็นแค่ช่วงเวลา เป็นบล็อกสีเทา ส่วนชื่อ สถานที่ และหมายเหตุจะไม่ถูกส่งขึ้นไปเลย งานค้างกับหมายเหตุไม่แชร์ ตั้งทีละรายการได้ในฟอร์ม หรือติ๊กช่อง "คนอื่นเห็น" ในหน้ารายการทั้งหมด</div>
         <h3>ข้อมูล</h3>
         <div style="display:flex;flex-wrap:wrap;gap:4px"><button class="btn sm" type="button" id="setClearEx">ลบรายการตัวอย่าง</button><button class="btn sm" type="button" id="setClearDone">ลบงานที่เสร็จแล้ว</button><button class="btn sm" type="button" id="setClearPast">ลบนัดที่ผ่านไปแล้ว</button></div>
         <div class="alert" id="set-msg" hidden></div>
@@ -373,6 +420,32 @@ html{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,.08)}
     </main>
   </div>
   <footer>สถานะ: <span id="st">กำลังโหลด...</span><br>Weekly Planner &copy; 2569</footer>
+</div>
+
+<div class="shell" id="sv">
+  <div class="banner">
+    <div class="brand">
+      <img src="logo.svg" alt="" width="46" height="34">
+      <div>
+      <div class="en">ตารางที่แชร์ไว้ · ดูได้อย่างเดียว</div>
+      <h1 id="svTitle">กำลังโหลด...</h1>
+      </div>
+    </div>
+  </div>
+  <div class="marquee"><span id="svNote">ช่องสีเทาที่เขียนว่า "ไม่ว่าง" คือเวลาที่เจ้าของตารางไม่ว่าง แต่ไม่ได้บอกว่าทำอะไร</span></div>
+  <main>
+    <section class="view">
+      <div class="wk"><button class="btn sm" type="button" id="svPrev">« สัปดาห์ก่อน</button><button class="btn sm" type="button" id="svNow">สัปดาห์นี้</button><button class="btn sm" type="button" id="svNext">สัปดาห์หน้า »</button><b id="svWeek"></b></div>
+      <div class="box" id="svMsg">กำลังโหลดตาราง...</div>
+      <div id="svBody" hidden>
+      <div class="legend" id="svLegend"></div>
+      <div class="scroll"><table class="grid" id="svGrid"></table></div>
+      <h3>นัดที่จะถึง</h3>
+      <div class="scroll" style="border:0"><table class="t" id="svList"></table></div>
+      </div>
+    </section>
+  </main>
+  <footer>อัปเดตล่าสุด <span id="svAt">-</span><br><a href="./">เข้าสู่ระบบตารางของตัวเอง</a> · Weekly Planner</footer>
 </div>
 
 <script>
@@ -416,7 +489,8 @@ let loaded=false, mode='loading', ref=null, editing=null, clashConfirm=null;
 function normalize(d){
   const e=Array.isArray(d&&d.entries)?d.entries:[], t=Array.isArray(d&&d.tasks)?d.tasks:[], v=Array.isArray(d&&d.events)?d.events:[];
   const ttl=d&&typeof d.title==='string'?d.title.slice(0,40):'';
-  return {...(ttl?{title:ttl}:{}),entries:e.filter(x=>x&&x.id&&Array.isArray(x.days)).map(x=>({...x,days:[...x.days]})),tasks:t.filter(x=>x&&x.id).map(x=>({...x})),events:v.filter(x=>x&&x.id&&x.date).map(x=>({...x}))};
+  const sh=d&&d.share&&typeof d.share==='object'&&/^[A-Za-z0-9]{12,40}$/.test(d.share.id||'')?{id:d.share.id,on:!!d.share.on,def:d.share.def==='show'?'show':'busy'}:(d&&d.share&&d.share.def?{on:false,def:d.share.def==='show'?'show':'busy'}:null);
+  return {...(ttl?{title:ttl}:{}),...(sh?{share:sh}:{}),entries:e.filter(x=>x&&x.id&&Array.isArray(x.days)).map(x=>({...x,days:[...x.days]})),tasks:t.filter(x=>x&&x.id).map(x=>({...x})),events:v.filter(x=>x&&x.id&&x.date).map(x=>({...x}))};
 }
 
 /* ---------- persistence ---------- */
@@ -434,7 +508,57 @@ function persist(){
   if(!docRef){setStatus('บันทึกในเครื่องแล้ว '+nowHM()+' น.');return}
   setDoc(docRef,{...clone(state),updatedAt:serverTimestamp()})
     .catch(e=>setStatus('บันทึกขึ้นคลาวด์ไม่สำเร็จ ('+((e&&e.code)||'error')+') ข้อมูลยังอยู่ในเครื่อง'));
+  publishShare();
 }
+/* ---------- sharing: a separate public copy with private items reduced to "busy" times ---------- */
+let shareT=null, shareErr='', shareAt=0, shareGone={};
+function newShareId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789',r=new Uint8Array(20);crypto.getRandomValues(r);return [...r].map(x=>c[x%c.length]).join('')}
+function publicData(){
+  const cut=addDays(isoDay(new Date()),-42);
+  return {owner:fbUser.uid,title:(state.title||'').trim(),updatedAt:serverTimestamp(),
+    entries:state.entries.filter(x=>!x.example).map(x=>isVis(x)?{days:[...x.days],start:x.start,end:x.end,name:x.name||'',code:codeOf(x),cat:x.cat||'OTHER',place:x.place||''}:{days:[...x.days],start:x.start,end:x.end,busy:true}),
+    events:state.events.filter(e=>!e.example&&evEnd(e)>=cut).map(e=>{const b={date:e.date,allDay:!!e.allDay,start:e.start||'',end:e.end||'',...(e.endDate?{endDate:e.endDate}:{})};return isVis(e)?{...b,title:e.title||'',cat:e.cat||'OTHER',place:e.place||''}:{...b,busy:true}})};
+}
+function publishShare(now){
+  if(!fbUser||!state.share||!state.share.id) return;
+  clearTimeout(shareT);
+  shareT=setTimeout(()=>{
+    const id=state.share.id, ref=doc(fdb,'shares',id);
+    if(!state.share.on){ if(!shareGone[id]){shareGone[id]=1;deleteDoc(ref).catch(()=>{})} return }
+    delete shareGone[id];
+    setDoc(ref,publicData()).then(()=>{shareErr='';shareAt=Date.now();renderShare()}).catch(e=>{shareErr=(e&&e.code)||'error';renderShare()});
+  },now?0:1200);
+}
+function shareUrl(){return location.origin+location.pathname.replace(/index\.html$/,'')+'?s='+state.share.id}
+function renderShare(){
+  const on=!!(state.share&&state.share.on&&state.share.id);
+  $('shState').innerHTML=on?'<b style="color:var(--ok)">เปิดอยู่</b>':'<b>ปิดอยู่</b>';
+  $('shToggle').textContent=on?'ปิดการแชร์':'เปิดการแชร์';
+  $('shLinkRow').hidden=!on; if(on) $('shUrl').value=shareUrl();
+  $('shDef').value=defVis();
+  const all=[...state.entries,...state.events].filter(x=>!x.example), sh=all.filter(isVis).length;
+  $('shCount').textContent=all.length?`ตอนนี้คนอื่นเห็นรายละเอียด ${sh} รายการ และเห็นว่า "ไม่ว่าง" ${all.length-sh} รายการ`:'';
+  const m=$('sh-msg');
+  if(shareErr){m.hidden=false;m.className='alert';m.textContent=shareErr==='permission-denied'?'อัปโหลดตารางที่แชร์ไม่ได้ เพราะ Firestore Rules ยังไม่อนุญาตให้แชร์ ต้องแก้ Rules ใน Firebase Console ก่อน':'อัปโหลดตารางที่แชร์ไม่สำเร็จ ('+shareErr+') จะลองใหม่ตอนแก้ไขครั้งถัดไป'}
+  else if(on&&shareAt){m.hidden=false;m.className='alert okay';m.textContent='อัปเดตตารางที่แชร์แล้ว '+fmt(new Date(shareAt).getHours()*60+new Date(shareAt).getMinutes())+' น.'}
+  else m.hidden=true;
+}
+$('shToggle').addEventListener('click',()=>{
+  if(!fbUser) return;
+  const on=!!(state.share&&state.share.on&&state.share.id);
+  if(on){state.share.on=false;commit('ปิดการแชร์');publishShare(true);return}
+  state.share={def:defVis(),...(state.share||{}),on:true}; if(!state.share.id) state.share.id=newShareId();
+  commit('เปิดการแชร์'); publishShare(true);
+});
+$('shNew').addEventListener('click',()=>{
+  if(!arm($('shNew'),'shnew','กดอีกครั้ง ลิงก์เก่าจะใช้ไม่ได้')) return; armed.shnew=false;
+  const old=state.share.id; deleteDoc(doc(fdb,'shares',old)).catch(()=>{});
+  state.share.id=newShareId(); commit('เปลี่ยนลิงก์แชร์'); publishShare(true);
+});
+$('shCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(shareUrl());$('shCopy').textContent='คัดลอกแล้ว';setTimeout(()=>$('shCopy').textContent='คัดลอกลิงก์',2000)}catch(e){$('shUrl').select()}});
+$('shOpen').addEventListener('click',()=>window.open(shareUrl(),'_blank'));
+$('shDef').addEventListener('change',()=>{state.share={on:false,...(state.share||{}),def:$('shDef').value};commit('ตั้งค่าเริ่มต้นการแชร์')});
+document.querySelectorAll('[data-shall]').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.shall;[...state.entries,...state.events].forEach(x=>{x.vis=v});commit(v==='show'?'ให้คนอื่นเห็นทุกรายการ':'ซ่อนทุกรายการ')}));
 function hasRealData(d){return !!d&&[...(d.entries||[]),...(d.events||[]),...(d.tasks||[])].some(x=>!x.example)}
 function startSync(u){
   docRef=doc(fdb,'users',u.uid,'data','main');
@@ -541,59 +665,138 @@ function nextCode(cat){
 /* ---------- dates ---------- */
 function weekDates(off){const t=new Date();const m=new Date(t.getFullYear(),t.getMonth(),t.getDate()-dayIdx(t)+off*7);return DAYS.map((_,i)=>new Date(m.getFullYear(),m.getMonth(),m.getDate()+i))}
 function parseIso(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
-function evsOn(iso){return state.events.filter(e=>e.date===iso).sort((p,q)=>(q.allDay?1:0)-(p.allDay?1:0)||String(p.start).localeCompare(String(q.start)))}
-function evTime(e){return e.allDay?'ทั้งวัน':`${e.start}-${e.end}`}
+function addDays(iso,n){const d=parseIso(iso);return isoDay(new Date(d.getFullYear(),d.getMonth(),d.getDate()+n))}
+function evEnd(e){return e.endDate&&e.endDate>e.date?e.endDate:e.date}
+/* the piece of an event that falls on one day: multi-day events become a start piece, full days in between, and an end piece */
+function segOn(e,iso){
+  const a=e.date,b=evEnd(e); if(iso<a||iso>b) return null;
+  if(a===b) return e;
+  const base={...e,os:e.start,oe:e.end,multi:true};
+  if(e.allDay) return base;
+  const first=iso===a,last=iso===b;
+  if(!first&&!last) return {...base,allDay:true,mid:true};
+  if(last&&e.end==='00:00') return null;
+  return {...base,start:first?e.start:'00:00',end:last?e.end:'24:00',contL:!first,contR:!last};
+}
+function evsOnOf(list,iso){return (list||[]).map(e=>segOn(e,iso)).filter(Boolean).sort((p,q)=>(q.allDay?1:0)-(p.allDay?1:0)||String(p.start).localeCompare(String(q.start)))}
+function evsOn(iso){return evsOnOf(state.events,iso)}
+function evTime(e){
+  const s=e.os??e.start, en=e.oe??e.end;
+  if(e.endDate&&e.endDate>e.date) return e.allDay?`${thShort(e.date)} ถึง ${thShort(e.endDate)}`:`${thShort(e.date)} ${s} ถึง ${thShort(e.endDate)} ${en}`;
+  if(!e.allDay&&en==='24:00') return `${s}-24:00`;
+  return e.allDay?'ทั้งวัน':`${s}-${en}`;
+}
 
 /* ---------- render: week grid ---------- */
-function range(wd){
+/* items: {kind,id,name,code,cat,start,end,place,clash,priv,busy,contL,contR,tip} ; shared view passes busy items with no details */
+function gridRange(wd,itemsFn){
   let a=7*60,b=21*60;
-  const isos=wd.map(isoDay);
-  [...state.entries,...state.events.filter(e=>!e.allDay&&isos.includes(e.date))].forEach(x=>{a=Math.min(a,Math.floor(toMin(x.start)/60)*60);b=Math.max(b,Math.ceil(toMin(x.end)/60)*60)});
+  wd.forEach((d,di)=>itemsFn(isoDay(d),di).forEach(x=>{
+    const s=toMin(x.start),e=toMin(x.end);
+    if(!x.contL) a=Math.min(a,Math.floor(s/60)*60); else a=Math.min(a,Math.max(0,Math.ceil(e/60)*60-60));
+    if(!x.contR) b=Math.max(b,Math.ceil(e/60)*60); else b=Math.max(b,Math.min(1440,Math.floor(s/60)*60+60));
+  }));
   return [a,Math.min(b,24*60)];
 }
-function renderGrid(){
-  const wd=weekDates(weekOff), [a,b]=range(wd), n=(b-a)/30, today=weekOff===0?dayIdx(new Date()):-1;
-  $('wTitle').textContent=`${wd[0].getDate()} ${MS[wd[0].getMonth()]} ถึง ${wd[6].getDate()} ${MS[wd[6].getMonth()]} ${wd[6].getFullYear()+543}`;
+function weekTitle(wd){return `${wd[0].getDate()} ${MS[wd[0].getMonth()]} ถึง ${wd[6].getDate()} ${MS[wd[6].getMonth()]} ${wd[6].getFullYear()+543}`}
+function gridHTML(wd,itemsFn,adFn,o){
+  o=o||{}; const [a,b]=gridRange(wd,itemsFn), n=(b-a)/30, tIso=isoDay(new Date());
   let h='<colgroup><col style="width:62px">'+'<col style="width:26px">'.repeat(n)+'</colgroup><thead><tr><th></th>';
   for(let t=a;t<b;t+=60) h+=`<th colspan="2">${fmt(t)}</th>`;
   h+='</tr></thead><tbody>';
   DAYS.forEach((D,di)=>{
-    const iso=isoDay(wd[di]), dayEv=evsOn(iso);
-    const items=[...state.entries.filter(x=>x.days.includes(di)),...dayEv.filter(e=>!e.allDay).map(e=>({...e,ev:true,code:'',name:e.title}))].map(x=>({x,s:Math.max(0,Math.floor((toMin(x.start)-a)/30)),e:Math.min(n,Math.ceil((toMin(x.end)-a)/30))})).filter(o=>o.e>o.s).sort((p,q)=>p.s-q.s||q.e-p.e);
+    const iso=isoDay(wd[di]), isT=iso===tIso;
+    const items=itemsFn(iso,di).map(x=>({x,s:Math.max(0,Math.floor((toMin(x.start)-a)/30)),e:Math.min(n,Math.ceil((toMin(x.end)-a)/30))})).filter(q=>q.e>q.s).sort((p,q)=>p.s-q.s||q.e-p.e);
     const lanes=[];
-    items.forEach(o=>{let L=lanes.findIndex(l=>l.end<=o.s); if(L<0){lanes.push({end:0,items:[]});L=lanes.length-1} lanes[L].items.push(o); lanes[L].end=o.e;});
+    items.forEach(q=>{let L=lanes.findIndex(l=>l.end<=q.s); if(L<0){lanes.push({end:0,items:[]});L=lanes.length-1} lanes[L].items.push(q); lanes[L].end=q.e;});
     if(!lanes.length) lanes.push({end:0,items:[]});
+    const slot=c=>o.ro?'<td class="slot ro"></td>':`<td class="slot${c%2===0?' h':''}" data-d="${di}" data-iso="${iso}" data-t="${a+c*30}"></td>`;
     lanes.forEach((lane,li)=>{
-      h+=`<tr class="${di===today?'today':''}">`;
-      if(li===0) h+=`<th class="day${di===today?' today':''}" rowspan="${lanes.length}" scope="row"><span class="mono">${D.en}</span> <span class="dt">${wd[di].getDate()}/${wd[di].getMonth()+1}</span><br>${D.th}${dayEv.filter(e=>e.allDay).map(e=>`<span class="ad" data-ev="${esc(e.id)}" title="${esc(e.title)}">${esc(e.title)}</span>`).join('')}</th>`;
+      h+='<tr>';
+      if(li===0) h+=`<th class="day${isT?' today':''}" rowspan="${lanes.length}" scope="row"><span class="mono">${D.en}</span> <span class="dt">${wd[di].getDate()}/${wd[di].getMonth()+1}</span><br>${D.th}`+
+        adFn(iso).map(e=>e.busy?'<span class="ad busy">ไม่ว่างทั้งวัน</span>':`<span class="ad${e.priv?' priv':''}"${o.ro?'':` data-ev="${esc(e.id)}"`} title="${esc(e.title+(e.priv?' (คนอื่นเห็นว่า ไม่ว่าง)':''))}">${esc(e.title)}</span>`).join('')+'</th>';
       let c=0;
-      lane.items.forEach(o=>{
-        for(;c<o.s;c++) h+=`<td class="slot${c%2===0?' h':''}" data-d="${di}" data-iso="${iso}" data-t="${a+c*30}"></td>`;
-        const x=o.x, span=o.e-o.s, clash=!x.ev&&hasClash(x);
-        h+=`<td class="blk cat-${esc(x.cat)}${clash?' clash':''}${x.ev?' ev':''}" colspan="${span}" tabindex="0" ${x.ev?'data-ev':'data-id'}="${esc(x.id)}" title="${esc((codeOf(x)?codeOf(x)+' ':'')+x.name+' '+x.start+'-'+x.end+(x.place?' @ '+x.place:''))}">`+
-           `${codeOf(x)?`<span class="c">${esc(codeOf(x))}</span>`:''}<span class="n" style="font-weight:700">${esc(x.name)}</span>${span>=3?`<span class="p">${esc(x.start)}-${esc(x.end)}${x.place?' · '+esc(x.place):''}</span>`:''}</td>`;
-        c=o.e;
+      lane.items.forEach(q=>{
+        for(;c<q.s;c++) h+=slot(c);
+        const x=q.x, span=q.e-q.s, tm=x.contL?`…-${x.end}`:x.contR?`${x.start}-…`:`${x.start}-${x.end}`;
+        if(x.busy) h+=`<td class="blk busy" colspan="${span}" title="ไม่ว่าง ${esc(x.tip||tm)}"><span class="n">ไม่ว่าง</span>${span>=3?`<span class="p">${esc(tm)}</span>`:''}</td>`;
+        else h+=`<td class="blk cat-${esc(x.cat)}${x.clash?' clash':''}${x.kind==='event'?' ev':''}${x.priv?' priv':''}" colspan="${span}"${o.ro?'':` tabindex="0" ${x.kind==='event'?'data-ev':'data-id'}="${esc(x.id)}"`} title="${esc((x.code?x.code+' ':'')+x.name+' '+(x.tip||tm)+(x.place?' @ '+x.place:'')+(x.priv?' (คนอื่นเห็นว่า ไม่ว่าง)':''))}">`+
+           `${x.code?`<span class="c">${esc(x.code)}</span>`:''}<span class="n" style="font-weight:700">${esc(x.name)}</span>${span>=3?`<span class="p">${esc(tm)}${x.place?' · '+esc(x.place):''}</span>`:''}</td>`;
+        c=q.e;
       });
-      for(;c<n;c++) h+=`<td class="slot${c%2===0?' h':''}" data-d="${di}" data-iso="${iso}" data-t="${a+c*30}"></td>`;
+      for(;c<n;c++) h+=slot(c);
       h+='</tr>';
     });
   });
-  h+='</tbody>';
-  $('grid').innerHTML=h;
+  return h+'</tbody>';
+}
+function ownItems(iso,di){
+  return [...state.entries.filter(x=>x.days.includes(di)).map(x=>({kind:'entry',id:x.id,name:x.name,code:codeOf(x),cat:x.cat,start:x.start,end:x.end,place:x.place||'',clash:hasClash(x),priv:!isVis(x)})),
+    ...evsOn(iso).filter(e=>!e.allDay).map(e=>({kind:'event',id:e.id,name:e.title,code:'',cat:e.cat,start:e.start,end:e.end,place:e.place||'',contL:e.contL,contR:e.contR,tip:evTime(e),priv:!isVis(e)}))];
+}
+function ownAllDay(iso){return evsOn(iso).filter(e=>e.allDay).map(e=>({id:e.id,title:e.title,priv:!isVis(e)}))}
+function renderGrid(){
+  const wd=weekDates(weekOff);
+  $('wTitle').textContent=weekTitle(wd);
+  $('grid').innerHTML=gridHTML(wd,ownItems,ownAllDay);
   $('weekempty').hidden=!loaded||state.entries.length>0;
   $('exnote').hidden=![...state.entries,...state.tasks,...state.events].some(x=>x.example);
+  paintSel();
 }
+/* ---------- picking a time range on the grid: drag with a mouse, or tap start then tap end ---------- */
+let gsel=null, mouseAt=0;
+function paintSel(){
+  document.querySelectorAll('#grid td.slot.pick').forEach(td=>td.classList.remove('pick'));
+  const bar=$('selbar');
+  if(!gsel){bar.hidden=true;return}
+  const lo=Math.min(gsel.t0,gsel.t1),hi=Math.max(gsel.t0,gsel.t1);
+  document.querySelectorAll(`#grid td.slot[data-iso="${gsel.iso}"]`).forEach(td=>{const t=+td.dataset.t;if(t>=lo&&t<=hi&&(!gsel.lane||td.parentElement.rowIndex===gsel.lane))td.classList.add('pick')});
+  if(gsel.drag){bar.hidden=true;return}
+  bar.hidden=false;
+  bar.innerHTML=`<span>เริ่ม <b>${DAYS[gsel.di].s} ${thShort(gsel.iso)} ${fmt(gsel.t0)}</b> แตะช่องเวลาจบในวันเดียวกัน</span><button class="btn sm" type="button" data-sq="60">1 ชม.</button><button class="btn sm" type="button" data-sq="120">2 ชม.</button><button class="btn sm" type="button" data-sx>ยกเลิก</button>`;
+}
+function openNew(iso,di,a,b){
+  gsel=null;paintSel();
+  resetForm({mode:'weekly',date:iso,edate:iso,start:fmt(a),end:fmt(Math.min(b,1440))});
+  document.querySelectorAll('#e-days input').forEach(i=>i.checked=+i.value===di);
+  show('add');$('e-name').focus();
+}
+$('selbar').addEventListener('click',ev=>{
+  if(ev.target.closest('[data-sx]')){gsel=null;paintSel();return}
+  const q=ev.target.closest('[data-sq]'); if(q&&gsel) openNew(gsel.iso,gsel.di,gsel.t0,gsel.t0+(+q.dataset.sq));
+});
+$('grid').addEventListener('pointerdown',ev=>{
+  if(ev.pointerType!=='mouse'||ev.button!==0) return;
+  const s=ev.target.closest('td.slot'); if(!s||!s.dataset.iso) return;
+  ev.preventDefault();
+  gsel={iso:s.dataset.iso,di:+s.dataset.d,t0:+s.dataset.t,t1:+s.dataset.t,lane:s.parentElement.rowIndex,drag:true,moved:false}; paintSel();
+});
+$('grid').addEventListener('pointerover',ev=>{
+  if(!gsel||!gsel.drag) return;
+  const s=ev.target.closest('td.slot'); if(!s||s.dataset.iso!==gsel.iso) return;
+  gsel.t1=+s.dataset.t; gsel.moved=gsel.moved||gsel.t1!==gsel.t0; paintSel();
+});
+document.addEventListener('pointerup',()=>{
+  if(!gsel||!gsel.drag) return;
+  const g=gsel; mouseAt=Date.now();
+  const lo=Math.min(g.t0,g.t1),hi=Math.max(g.t0,g.t1);
+  openNew(g.iso,g.di,lo,g.moved?hi+30:lo+60);
+});
 $('grid').addEventListener('click',ev=>{
   const evb=ev.target.closest('[data-ev]'); if(evb){openEv(evb.dataset.ev);return}
   const blk=ev.target.closest('td.blk'); if(blk){openEdit(blk.dataset.id);return}
-  const s=ev.target.closest('td.slot'); if(s){const t=+s.dataset.t;resetForm({mode:'weekly',date:s.dataset.iso,start:fmt(t),end:fmt(Math.min(t+60,1440))});document.querySelectorAll('#e-days input').forEach(i=>i.checked=+i.value===+s.dataset.d);show('add');$('e-name').focus()}
+  const s=ev.target.closest('td.slot'); if(!s||!s.dataset.iso) return;
+  if(Date.now()-mouseAt<500) return;
+  const t=+s.dataset.t;
+  if(gsel&&!gsel.drag&&gsel.iso===s.dataset.iso&&t>=gsel.t0){openNew(gsel.iso,gsel.di,gsel.t0,t+30);return}
+  gsel={iso:s.dataset.iso,di:+s.dataset.d,t0:t,t1:t,drag:false}; paintSel();
 });
 $('grid').addEventListener('keydown',ev=>{const blk=ev.target.closest('td.blk');if(blk&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();blk.dataset.ev?openEv(blk.dataset.ev):openEdit(blk.dataset.id)}});
-$('wPrev').addEventListener('click',()=>{weekOff--;renderGrid()});
-$('wNext').addEventListener('click',()=>{weekOff++;renderGrid()});
+$('wPrev').addEventListener('click',()=>{weekOff--;gsel=null;renderGrid()});
+$('wNext').addEventListener('click',()=>{weekOff++;gsel=null;renderGrid()});
 $('wNow').addEventListener('click',()=>{weekOff=0;renderGrid()});
 
-function renderLegend(){$('legend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><b>[นัด]</b> นัดครั้งเดียว</span><span style="color:var(--warn)"><b>*ชน*</b> เวลาชน</span>'}
+function renderLegend(){$('legend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><b>[นัด]</b> นัดครั้งเดียว</span><span style="color:var(--warn)"><b>*ชน*</b> เวลาชน</span>'+(state.share&&state.share.on?'<span><span class="sw privsw"></span>คนอื่นเห็นว่า "ไม่ว่าง"</span>':'')}
 
 /* ---------- today / due ---------- */
 function renderToday(){
@@ -642,39 +845,85 @@ function thShort(due){if(!due)return '-';const [y,m,d]=due.split('-').map(Number
   const opts=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
   $('e-cat').innerHTML=opts; $('t-cat').innerHTML=opts;
   $('e-days').innerHTML=DAYS.map((D,i)=>`<label><input type="checkbox" id="e-day-${i}" value="${i}"> ${D.th}</label>`).join('');
-  let t='';for(let m=0;m<=1440;m+=15)t+=`<option value="${fmt(m)}">${fmt(m)}</option>`;
-  $('e-start').innerHTML=t.replace('<option value="24:00">24:00</option>',''); $('e-end').innerHTML=t;
 })();
 function msg(text,ok){const m=$('e-msg');m.hidden=!text;m.innerHTML=text||'';m.classList.toggle('okay',!!ok)}
 function fmode(){return $('e-mode-o').checked?'once':'weekly'}
-function syncMode(){const m=fmode();document.querySelectorAll('#ef .rw').forEach(el=>el.hidden=m!=='weekly');document.querySelectorAll('#ef .ro').forEach(el=>el.hidden=m!=='once');$('e-times').hidden=m==='once'&&$('e-allday').checked}
+const tv=v=>v==='24:00'?'23:59':(v||'');
+function addMin(iso,t,m){const d=parseIso(iso);d.setMinutes(toMin(t)+m);return [isoDay(d),fmt(d.getHours()*60+d.getMinutes())]}
+function spanMin(a,ta,b,tb){return Math.round((parseIso(b)-parseIso(a))/60000)+toMin(tb)-toMin(ta)}
+function durText(m){if(m<=0)return '-';const d=Math.floor(m/1440),h=Math.floor(m%1440/60),n=m%60;return [d?d+' วัน':'',h?h+' ชม.':'',n?n+' นาที':''].filter(Boolean).join(' ')}
+function syncMode(){
+  const m=fmode(), ad=$('e-allday').checked;
+  document.querySelectorAll('#ef .rw').forEach(el=>el.hidden=m!=='weekly');
+  document.querySelectorAll('#ef .ro').forEach(el=>el.hidden=m!=='once');
+  document.querySelectorAll('#ef .tm,#ef .tmq').forEach(el=>el.hidden=m==='once'&&ad);
+  updDur();
+}
+function curDur(){
+  if(fmode()==='weekly'){const a=$('e-start').value,b=$('e-end').value;return a&&b?toMin(b)-toMin(a):0}
+  const d1=$('e-date').value,d2=$('e-edate').value||d1;
+  if(!d1) return 0;
+  if($('e-allday').checked) return d2>=d1?(spanMin(d1,'00:00',d2,'00:00')+1440):0;
+  const a=$('e-ostart').value,b=$('e-oend').value; return a&&b?spanMin(d1,a,d2,b):0;
+}
+let keepDur=60;
+function updDur(){const m=curDur();$('e-dur').textContent=m>0?'รวม '+durText(m):'เวลาจบต้องหลังเวลาเริ่ม';$('e-dur').classList.toggle('bad',m<=0);if(m>0)keepDur=m}
+function setDur(m){
+  if(fmode()==='weekly'){const a=$('e-start').value||'08:00';$('e-end').value=fmt(Math.min(toMin(a)+m,1439))}
+  else{const d1=$('e-date').value||isoDay(new Date()),a=$('e-ostart').value||'09:00';const [d2,t2]=addMin(d1,a,m);$('e-edate').value=d2;$('e-oend').value=t2;$('e-allday').checked=false;syncMode()}
+  updDur();clashConfirm=null;
+}
+document.querySelector('#ef .durs').addEventListener('click',ev=>{const b=ev.target.closest('[data-dur]');if(b)setDur(+b.dataset.dur)});
+/* moving the start keeps the length, like a calendar app */
+['e-start','e-date','e-ostart'].forEach(id=>$(id).addEventListener('change',()=>{
+  const k=keepDur;
+  if(id==='e-start'){if($('e-start').value)$('e-end').value=fmt(Math.min(toMin($('e-start').value)+k,1439))}
+  else if($('e-date').value){
+    if($('e-allday').checked){const ed=$('e-edate').value;if(!ed||ed<$('e-date').value)$('e-edate').value=$('e-date').value}
+    else if($('e-ostart').value){const [d2,t2]=addMin($('e-date').value,$('e-ostart').value,k);$('e-edate').value=d2;$('e-oend').value=t2}
+  }
+  updDur();
+}));
+['e-end','e-edate','e-oend'].forEach(id=>$(id).addEventListener('change',updDur));
 ['e-mode-w','e-mode-o','e-allday'].forEach(id=>$(id).addEventListener('change',syncMode));
+function defVis(){return (state.share&&state.share.def)||'busy'}
+function isVis(x){return (x.vis||defVis())==='show'}
+function setVisRadio(v){(v==='show'?$('e-vis-s'):$('e-vis-b')).checked=true}
 function resetForm(o){
-  o=o||{}; editing=null;clashConfirm=null;$('ef').reset();$('e-start').value=o.start||'08:00';$('e-end').value=o.end||'09:00';
-  $('e-date').value=o.date||calSel||isoDay(new Date()); (o.mode==='once'?$('e-mode-o'):$('e-mode-w')).checked=true;
+  o=o||{}; editing=null;clashConfirm=null;$('ef').reset();
+  const st=tv(o.start||'08:00'), en=tv(o.end||'09:00');
+  $('e-start').value=st;$('e-end').value=en;$('e-ostart').value=st;$('e-oend').value=en;
+  $('e-date').value=o.date||calSel||isoDay(new Date()); $('e-edate').value=o.edate||$('e-date').value;
+  (o.mode==='once'?$('e-mode-o'):$('e-mode-w')).checked=true; setVisRadio(defVis());
   $('formTitle').textContent='เพิ่มรายการ';$('e-del').hidden=true;msg('');syncMode();
 }
 function openEdit(id){
   const x=state.entries.find(e=>e.id===id); if(!x) return;
-  resetForm({mode:'weekly'}); editing={kind:'entry',id};
+  resetForm({mode:'weekly',start:x.start,end:x.end}); editing={kind:'entry',id};
   $('e-code').value=codeOf(x);$('e-name').value=x.name||'';$('e-cat').value=x.cat||'OTHER';
   document.querySelectorAll('#e-days input').forEach(i=>i.checked=x.days.includes(+i.value));
-  $('e-start').value=x.start;$('e-end').value=x.end;$('e-place').value=x.place||'';$('e-note').value=x.note||'';
-  $('formTitle').textContent='แก้ไข '+(x.name||'');$('e-del').hidden=false;
+  $('e-place').value=x.place||'';$('e-note').value=x.note||'';setVisRadio(isVis(x)?'show':'busy');
+  $('formTitle').textContent='แก้ไข '+(x.name||'');$('e-del').hidden=false;updDur();
   show('add');
 }
 function openEv(id){
   const e=state.events.find(x=>x.id===id); if(!e) return;
-  resetForm({mode:'once',date:e.date,start:e.start||'09:00',end:e.end||'10:00'}); editing={kind:'event',id};
-  $('e-name').value=e.title||'';$('e-cat').value=e.cat||'OTHER';$('e-allday').checked=!!e.allDay;$('e-place').value=e.place||'';$('e-note').value=e.note||'';
+  const mid=e.end==='24:00';
+  resetForm({mode:'once',date:e.date,edate:mid?addDays(e.date,1):evEnd(e),start:e.start||'09:00',end:mid?'00:00':(e.end||'10:00')}); editing={kind:'event',id};
+  $('e-name').value=e.title||'';$('e-cat').value=e.cat||'OTHER';$('e-allday').checked=!!e.allDay;$('e-place').value=e.place||'';$('e-note').value=e.note||'';setVisRadio(isVis(e)?'show':'busy');
   $('formTitle').textContent='แก้ไขนัด '+(e.title||'');$('e-del').hidden=false;syncMode();
   show('add');
 }
 function onceClashes(e,exId){
   if(e.allDay) return [];
-  const s=toMin(e.start),en=toMin(e.end),di=dayIdx(parseIso(e.date));
-  return [...state.entries.filter(x=>x.id!==exId&&x.days.includes(di)&&toMin(x.start)<en&&s<toMin(x.end)).map(x=>`${esc(x.name)} (${esc(x.start)}-${esc(x.end)})`),
-          ...state.events.filter(x=>x.id!==exId&&x.date===e.date&&!x.allDay&&toMin(x.start)<en&&s<toMin(x.end)).map(x=>`นัด ${esc(x.title)} (${esc(x.start)}-${esc(x.end)})`)];
+  const out=[], b=evEnd(e);
+  for(let iso=e.date,k=0;iso<=b&&k<62;iso=addDays(iso,1),k++){
+    const g=segOn(e,iso); if(!g||g.allDay) continue;
+    const s=toMin(g.start),en=toMin(g.end),di=dayIdx(parseIso(iso));
+    state.entries.filter(x=>x.id!==exId&&x.days.includes(di)&&toMin(x.start)<en&&s<toMin(x.end)).forEach(x=>out.push(`${esc(x.name)} (${DAYS[di].s} ${esc(x.start)}-${esc(x.end)})`));
+    evsOn(iso).filter(x=>x.id!==exId&&!x.allDay&&toMin(x.start)<en&&s<toMin(x.end)).forEach(x=>out.push(`นัด ${esc(x.title)} (${esc(evTime(x))})`));
+  }
+  return [...new Set(out)];
 }
 let delArm=false;
 $('e-del').addEventListener('click',()=>{
@@ -688,13 +937,14 @@ $('e-reset').addEventListener('click',()=>resetForm({mode:fmode()}));
 $('ef').addEventListener('input',()=>{clashConfirm=null});
 $('ef').addEventListener('submit',ev=>{
   ev.preventDefault();
-  const m=fmode(), name=$('e-name').value.trim(), cat=$('e-cat').value, start=$('e-start').value, end=$('e-end').value, place=$('e-place').value.trim(), note=$('e-note').value.trim();
+  const m=fmode(), name=$('e-name').value.trim(), cat=$('e-cat').value, start=$('e-start').value, end=$('e-end').value, place=$('e-place').value.trim(), note=$('e-note').value.trim(), vis=$('e-vis-s').checked?'show':'busy';
   const exId=editing?editing.id:null, id=exId||uid();
   if(!name) return msg('ใส่ชื่อรายการก่อน');
   if(m==='weekly'){
     const days=[...document.querySelectorAll('#e-days input:checked')].map(i=>+i.value);
-    const entry={id,code:$('e-code').value.trim(),name,cat,days,start,end,place,note};
+    const entry={id,code:$('e-code').value.trim(),name,cat,days,start,end,place,note,vis};
     if(!days.length) return msg('เลือกอย่างน้อย 1 วัน');
+    if(!start||!end) return msg('ใส่เวลาเริ่มและเวลาจบ');
     if(toMin(end)<=toMin(start)) return msg('เวลาจบต้องหลังเวลาเริ่ม');
     const cl=clashes(entry,exId), sig=JSON.stringify([m,days,start,end]);
     if(cl.length&&clashConfirm!==sig){clashConfirm=sig;return msg('<b>เวลาชน</b> กับ '+cl.map(x=>`${esc(x.name)} (${x.days.map(d=>DAYS[d].s).join(' ')} ${esc(x.start)}-${esc(x.end)})`).join(', ')+'<br>กดบันทึกอีกครั้งถ้าจะลงซ้อนกัน')}
@@ -702,15 +952,22 @@ $('ef').addEventListener('submit',ev=>{
     const old=state.entries.find(e=>e.id===id);
     if(old) Object.assign(old,entry,{example:false}); else state.entries.push(entry);
   } else {
-    const date=$('e-date').value, allDay=$('e-allday').checked;
-    if(!date) return msg('เลือกวันที่ก่อน');
-    if(!allDay&&toMin(end)<=toMin(start)) return msg('เวลาจบต้องหลังเวลาเริ่ม');
-    const e={id,title:name,date,allDay,start:allDay?'':start,end:allDay?'':end,cat,place,note};
-    const cl=onceClashes(e,exId), sig=JSON.stringify([m,date,start,end,allDay]);
+    const date=$('e-date').value, edate=$('e-edate').value||date, allDay=$('e-allday').checked, os=$('e-ostart').value, oe=$('e-oend').value;
+    if(!date) return msg('เลือกวันเริ่มก่อน');
+    if(edate<date) return msg('วันจบต้องไม่ก่อนวันเริ่ม');
+    if(!allDay){
+      if(!os||!oe) return msg('ใส่เวลาเริ่มและเวลาจบ');
+      if(spanMin(date,os,edate,oe)<=0) return msg(edate===date?'เวลาจบต้องหลังเวลาเริ่ม ถ้าจบหลังเที่ยงคืนให้เลื่อนวันจบเป็นวันถัดไป':'เวลาจบต้องหลังเวลาเริ่ม');
+    }
+    const e={id,title:name,date,allDay,start:allDay?'':os,end:allDay?'':oe,cat,place,note,vis};
+    if(edate>date&&!(edate===addDays(date,1)&&!allDay&&oe==='00:00')) e.endDate=edate;
+    else if(!allDay&&edate>date&&oe==='00:00') e.end='24:00';
+    if(spanMin(date,os||'00:00',edate,oe||'00:00')>62*1440) return msg('นัดยาวได้ไม่เกิน 62 วัน');
+    const cl=onceClashes(e,exId), sig=JSON.stringify([m,date,edate,os,oe,allDay]);
     if(cl.length&&clashConfirm!==sig){clashConfirm=sig;return msg('<b>เวลาชน</b> กับ '+cl.join(', ')+'<br>กดบันทึกอีกครั้งถ้าจะลงซ้อนกัน')}
     if(editing&&editing.kind==='entry') state.entries=state.entries.filter(x=>x.id!==exId);
     const old=state.events.find(x=>x.id===id);
-    if(old) Object.assign(old,e,{example:false}); else state.events.push(e);
+    if(old){delete old.endDate;Object.assign(old,e,{example:false})} else state.events.push(e);
     calSel=date;
   }
   resetForm({mode:m,date:$('e-date').value}); commit('บันทึก '+name);
@@ -720,19 +977,21 @@ $('ef').addEventListener('submit',ev=>{
 /* ---------- list ---------- */
 function renderList(){
   const L=[...state.entries].sort((p,q)=>Math.min(...p.days)-Math.min(...q.days)||toMin(p.start)-toMin(q.start));
-  let h='<thead><tr><th>#</th><th>ชื่อ</th><th>ประเภท</th><th>วัน</th><th>เวลา</th><th>สถานที่</th><th>ชม./สัปดาห์</th><th></th></tr></thead><tbody>';
+  let h='<thead><tr><th>#</th><th>ชื่อ</th><th>ประเภท</th><th>วัน</th><th>เวลา</th><th>สถานที่</th><th>ชม./สัปดาห์</th><th>คนอื่นเห็น</th><th></th></tr></thead><tbody>';
   if(!L.length) h+=`<tr><td colspan="9" class="ctr empty">${loaded?'ยังไม่มีรายการ':'กำลังโหลด...'}</td></tr>`;
-  L.forEach((x,i)=>{h+=`<tr><td class="ctr">${i+1}</td><td>${codeOf(x)?esc(codeOf(x))+' ':''}${esc(x.name)}${x.example?' <span class="ex">ตัวอย่าง</span>':''}${hasClash(x)?' <span class="st-over">ชน</span>':''}${x.note?`<br><span style="color:var(--muted)">${esc(x.note)}</span>`:''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(x.cat)}"></span>${esc(CATS[x.cat]||'')}</td><td style="white-space:nowrap">${x.days.slice().sort().map(d=>DAYS[d].s).join(' ')}</td><td class="mono ctr" style="white-space:nowrap">${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.place||'-')}</td><td class="num">${hours(x).toFixed(1)}</td><td class="ctr"><button class="btn sm" type="button" data-edit="${esc(x.id)}">แก้ไข</button></td></tr>`});
+  L.forEach((x,i)=>{h+=`<tr><td class="ctr">${i+1}</td><td>${codeOf(x)?esc(codeOf(x))+' ':''}${esc(x.name)}${x.example?' <span class="ex">ตัวอย่าง</span>':''}${hasClash(x)?' <span class="st-over">ชน</span>':''}${x.note?`<br><span style="color:var(--muted)">${esc(x.note)}</span>`:''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(x.cat)}"></span>${esc(CATS[x.cat]||'')}</td><td style="white-space:nowrap">${x.days.slice().sort().map(d=>DAYS[d].s).join(' ')}</td><td class="mono ctr" style="white-space:nowrap">${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.place||'-')}</td><td class="num">${hours(x).toFixed(1)}</td><td class="ctr" style="white-space:nowrap"><label><input type="checkbox" data-vis="entry:${esc(x.id)}" ${isVis(x)?'checked':''}> เห็น</label></td><td class="ctr"><button class="btn sm" type="button" data-edit="${esc(x.id)}">แก้ไข</button></td></tr>`});
   const tot=L.reduce((s,x)=>s+hours(x),0);
-  if(L.length) h+=`<tr><td colspan="6" class="num"><b>รวม</b></td><td class="num"><b>${tot.toFixed(1)}</b></td><td></td></tr>`;
+  if(L.length) h+=`<tr><td colspan="6" class="num"><b>รวม</b></td><td class="num"><b>${tot.toFixed(1)}</b></td><td></td><td></td></tr>`;
   $('ltab').innerHTML=h+'</tbody>';
-  const tIso=isoDay(new Date()), up=state.events.filter(e=>e.date>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start)));
-  let v='<thead><tr><th>วันที่</th><th>เวลา</th><th>ชื่อ</th><th>ประเภท</th><th>สถานที่</th><th></th></tr></thead><tbody>';
-  if(!up.length) v+=`<tr><td colspan="6" class="ctr empty">${loaded?'ไม่มีนัดที่จะถึง':'กำลังโหลด...'}</td></tr>`;
-  up.forEach(e=>{v+=`<tr><td style="white-space:nowrap">${DAYS[dayIdx(parseIso(e.date))].s} ${thShort(e.date)}</td><td class="ctr" style="white-space:nowrap">${esc(evTime(e))}</td><td>${esc(e.title)}${e.example?' <span class="ex">ตัวอย่าง</span>':''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(e.cat)}"></span>${esc(CATS[e.cat]||'')}</td><td>${esc(e.place||'-')}</td><td class="ctr"><button class="btn sm" type="button" data-oev="${esc(e.id)}">แก้ไข</button></td></tr>`});
+  const tIso=isoDay(new Date()), up=state.events.filter(e=>evEnd(e)>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start)));
+  let v='<thead><tr><th>วันที่</th><th>เวลา</th><th>ชื่อ</th><th>ประเภท</th><th>สถานที่</th><th>คนอื่นเห็น</th><th></th></tr></thead><tbody>';
+  if(!up.length) v+=`<tr><td colspan="7" class="ctr empty">${loaded?'ไม่มีนัดที่จะถึง':'กำลังโหลด...'}</td></tr>`;
+  up.forEach(e=>{v+=`<tr><td style="white-space:nowrap">${DAYS[dayIdx(parseIso(e.date))].s} ${thShort(e.date)}</td><td class="ctr" style="white-space:nowrap">${esc(evTime(e))}</td><td>${esc(e.title)}${e.example?' <span class="ex">ตัวอย่าง</span>':''}</td><td style="white-space:nowrap"><span class="sw cat-${esc(e.cat)}"></span>${esc(CATS[e.cat]||'')}</td><td>${esc(e.place||'-')}</td><td class="ctr" style="white-space:nowrap"><label><input type="checkbox" data-vis="event:${esc(e.id)}" ${isVis(e)?'checked':''}> เห็น</label></td><td class="ctr"><button class="btn sm" type="button" data-oev="${esc(e.id)}">แก้ไข</button></td></tr>`});
   $('vtab').innerHTML=v+'</tbody>';
 }
 $('ltab').addEventListener('click',ev=>{const b=ev.target.closest('[data-edit]');if(b)openEdit(b.dataset.edit)});
+function onVisToggle(ev){const c=ev.target.closest('[data-vis]');if(!c)return;const [k,id]=c.dataset.vis.split(':');const x=(k==='entry'?state.entries:state.events).find(y=>y.id===id);if(!x)return;x.vis=c.checked?'show':'busy';commit((c.checked?'ให้คนอื่นเห็น ':'ซ่อนจากคนอื่น ')+(x.name||x.title))}
+$('ltab').addEventListener('change',onVisToggle);$('vtab').addEventListener('change',onVisToggle);
 $('vtab').addEventListener('click',ev=>{const b=ev.target.closest('[data-oev]');if(b)openEv(b.dataset.oev)});
 
 /* ---------- tasks ---------- */
@@ -783,7 +1042,7 @@ function renderCal(){
     h+='<tr>';
     for(let i=0;i<7;i++){
       const d=new Date(st.getFullYear(),st.getMonth(),st.getDate()+w*7+i), iso=isoDay(d);
-      const its=[...evsOn(iso).map(e=>`<span class="it cat-${esc(e.cat)}" title="${esc(evTime(e)+' '+e.title)}">${e.allDay?'':esc(e.start)+' '}${esc(e.title)}</span>`),
+      const its=[...evsOn(iso).map(e=>`<span class="it cat-${esc(e.cat)}" title="${esc(evTime(e)+' '+e.title)}">${e.allDay||e.contL?'':esc(e.start)+' '}${esc(e.title)}</span>`),
                  ...state.tasks.filter(t=>t.due===iso&&!t.done).map(t=>`<span class="it due" title="ส่ง ${esc(t.title)}">ส่ง ${esc(t.title)}</span>`)];
       const cls=[d.getMonth()!==calM?'other':'',iso===tIso?'today':'',iso===calSel?'sel':''].filter(Boolean).join(' ');
       h+=`<td class="${cls}" data-date="${iso}" tabindex="0"><span class="dn">${d.getDate()}</span>${its.slice(0,3).join('')}${its.length>3?`<span class="more">อีก ${its.length-3} รายการ</span>`:''}</td>`;
@@ -822,7 +1081,7 @@ document.querySelectorAll('input[data-skin]').forEach(r=>r.addEventListener('cha
 function setMsg(t){const m=$('set-msg');m.hidden=false;m.className='alert okay';m.textContent=t}
 $('setClearEx').addEventListener('click',()=>{const n=[...state.entries,...state.tasks,...state.events].filter(x=>x.example).length;state.entries=state.entries.filter(x=>!x.example);state.tasks=state.tasks.filter(x=>!x.example);state.events=state.events.filter(x=>!x.example);commit('ลบตัวอย่าง');setMsg(`ลบรายการตัวอย่าง ${n} รายการแล้ว`)});
 $('setClearDone').addEventListener('click',()=>{const n=state.tasks.filter(t=>t.done).length;state.tasks=state.tasks.filter(t=>!t.done);commit('ลบงานที่เสร็จ');setMsg(`ลบงานที่เสร็จแล้ว ${n} งาน`)});
-$('setClearPast').addEventListener('click',()=>{const t=isoDay(new Date()),n=state.events.filter(e=>e.date<t).length;state.events=state.events.filter(e=>e.date>=t);commit('ลบนัดที่ผ่านไป');setMsg(`ลบนัดที่ผ่านไปแล้ว ${n} รายการ`)});
+$('setClearPast').addEventListener('click',()=>{const t=isoDay(new Date()),n=state.events.filter(e=>evEnd(e)<t).length;state.events=state.events.filter(e=>evEnd(e)>=t);commit('ลบนัดที่ผ่านไป');setMsg(`ลบนัดที่ผ่านไปแล้ว ${n} รายการ`)});
 try{applySkin(localStorage.getItem(SKEY)||'pink')}catch(e){applySkin('pink')}
 
 /* ---------- backup UI ---------- */
@@ -893,12 +1152,49 @@ $('ttlf').addEventListener('submit',ev=>{
   if(v) state.title=v; else delete state.title;
   commit('เปลี่ยนชื่อตาราง'); const m=$('ttl-msg');m.hidden=false;m.className='alert okay';m.textContent=v?'ตั้งชื่อเป็น '+v+' แล้ว':'กลับไปใช้ชื่อเริ่มต้นแล้ว';
 });
-function renderAll(){applyTitle();renderGrid();renderToday();renderList();renderTasks();renderSum();renderCal()}
+function renderAll(){applyTitle();renderLegend();renderShare();renderGrid();renderToday();renderList();renderTasks();renderSum();renderCal()}
 renderLegend(); resetForm(); renderAll(); renderUndo();
 /* ---------- login (Firebase Auth) ---------- */
 const AUTH_ERR={'auth/invalid-credential':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/wrong-password':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/user-not-found':'อีเมลหรือรหัสผ่านไม่ถูกต้อง','auth/invalid-email':'รูปแบบอีเมลไม่ถูกต้อง','auth/too-many-requests':'ลองผิดหลายครั้ง รอสักครู่แล้วลองใหม่','auth/network-request-failed':'ไม่มีอินเทอร์เน็ต เข้าสู่ระบบครั้งแรกต้องออนไลน์','auth/operation-not-allowed':'ยังไม่ได้เปิดการเข้าสู่ระบบด้วยอีเมลใน Firebase','auth/user-disabled':'บัญชีนี้ถูกปิดใช้งาน','auth/missing-password':'ใส่รหัสผ่านก่อน','auth/weak-password':'รหัสผ่านใหม่สั้นเกินไป','auth/requires-recent-login':'เข้าสู่ระบบใหม่อีกครั้งแล้วลองเปลี่ยนรหัสผ่าน'};
 const authMsg=e=>AUTH_ERR[e&&e.code]||('เกิดข้อผิดพลาด ('+((e&&e.code)||'unknown')+')');
+/* ---------- shared view (no login) ---------- */
+const SHARE_ID=(new URLSearchParams(location.search).get('s')||'').replace(/[^A-Za-z0-9]/g,'').slice(0,40);
+let svData=null, svOff=0;
+function svItems(iso,di){
+  if(!svData) return [];
+  const E=(svData.entries||[]).filter(x=>Array.isArray(x.days)&&x.days.includes(di)&&x.start&&x.end).map((x,i)=>x.busy?{busy:true,start:x.start,end:x.end}:{kind:'entry',id:'e'+i,name:x.name,code:x.code||'',cat:x.cat,start:x.start,end:x.end,place:x.place||''});
+  const V=evsOnOf(svData.events,iso).filter(e=>!e.allDay).map((e,i)=>e.busy?{busy:true,start:e.start,end:e.end,contL:e.contL,contR:e.contR,tip:evTime(e)}:{kind:'event',id:'v'+i,name:e.title,cat:e.cat,start:e.start,end:e.end,place:e.place||'',contL:e.contL,contR:e.contR,tip:evTime(e)});
+  return [...E,...V];
+}
+function svAllDay(iso){return svData?evsOnOf(svData.events,iso).filter(e=>e.allDay).map(e=>e.busy?{busy:true}:{title:e.title}):[]}
+function renderViewer(){
+  const wd=weekDates(svOff), t=(svData&&svData.title)||'ตารางที่แชร์';
+  $('svBody').hidden=!svData; if(svData) $('svTitle').textContent=t; document.title=t+' · Weekly Planner';
+  $('svWeek').textContent=weekTitle(wd);
+  $('svGrid').innerHTML=gridHTML(wd,svItems,svAllDay,{ro:true});
+  $('svLegend').innerHTML=Object.entries(CATS).map(([k,v])=>`<span><span class="sw cat-${k}"></span>${v}</span>`).join('')+'<span><span class="sw busysw"></span>ไม่ว่าง</span><span><b>[นัด]</b> นัดครั้งเดียว</span>';
+  const tIso=isoDay(new Date()), up=(svData&&svData.events||[]).filter(e=>evEnd(e)>=tIso).sort((p,q)=>p.date.localeCompare(q.date)||String(p.start).localeCompare(String(q.start))).slice(0,30);
+  let v='<thead><tr><th>วันที่</th><th>เวลา</th><th>รายการ</th><th>สถานที่</th></tr></thead><tbody>';
+  if(!up.length) v+='<tr><td colspan="4" class="ctr empty">ไม่มีนัดที่จะถึง</td></tr>';
+  up.forEach(e=>{v+=`<tr><td style="white-space:nowrap">${DAYS[dayIdx(parseIso(e.date))].s} ${thShort(e.date)}</td><td class="ctr" style="white-space:nowrap">${esc(evTime(e))}</td>${e.busy?'<td><span class="sw busysw"></span>ไม่ว่าง</td><td>-</td>':`<td><span class="sw cat-${esc(e.cat)}"></span>${esc(e.title)}</td><td>${esc(e.place||'-')}</td>`}</tr>`});
+  $('svList').innerHTML=v+'</tbody>';
+  const at=svData&&svData.updatedAt&&svData.updatedAt.toMillis?svData.updatedAt.toMillis():0;
+  $('svAt').textContent=at?stamp(at):'-';
+}
+function startViewer(){
+  document.documentElement.classList.add('viewing');
+  renderViewer();
+  onSnapshot(doc(fdb,'shares',SHARE_ID),snap=>{
+    if(!snap.exists()){svData=null;$('svMsg').hidden=false;$('svMsg').textContent='ลิงก์นี้ถูกปิดแล้ว หรือไม่ถูกต้อง ลองขอลิงก์ใหม่จากเจ้าของตาราง';$('svTitle').textContent='ไม่พบตาราง';renderViewer();return}
+    svData=snap.data(); $('svMsg').hidden=true; renderViewer();
+  },err=>{$('svMsg').hidden=false;$('svMsg').textContent='เปิดตารางนี้ไม่ได้ ('+((err&&err.code)||'error')+')';});
+}
+$('svPrev').addEventListener('click',()=>{svOff--;renderViewer()});
+$('svNext').addEventListener('click',()=>{svOff++;renderViewer()});
+$('svNow').addEventListener('click',()=>{svOff=0;renderViewer()});
+if(SHARE_ID) startViewer();
 onAuthStateChanged(auth,u=>{
+  if(SHARE_ID) return;
   $('l-wait').hidden=true;
   if(u){
     fbUser=u; $('who').textContent=u.email||'-'; $('lock').hidden=true; $('app').hidden=false;
